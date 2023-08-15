@@ -46,4 +46,10 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+testserver: $(SERVER) clean
+	./$(SERVER)
+
+testclient: $(CLIENT) clean
+	./$(CLIENT) 1234 "Hello World"
+
+.PHONY: all clean fclean re test
