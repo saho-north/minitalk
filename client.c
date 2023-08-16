@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/15 14:48:55 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 04:04:26 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,52 @@ Quickly means that if you think it takes too long, then it is probably too long.
 1 second for displaying 100 characters is way too much!
 Linux system does NOT queue signals when you already have pending
 signals of this type!  Bonus time?
+
+
+Chapter V Bonus part
+Bonus list:
+• The server acknowledges every message received by sending back a signal to the client.
+• Unicode characters support!
+
  */
+
+static void	send_bit(pid_t pid, char c)
+{
+	int	i;
+
+	i = 0;
+	while (i < 8)
+	{
+		if (c & 1)
+		{
+			if (kill(pid, SIGUSR1) < 0)
+			{
+				ft_putendl_fd("Error: Failed to send signal", 2);
+				exit(1);
+			}
+		}
+		else
+		{
+			if (kill(pid, SIGUSR2) < 0)
+			{
+				ft_putendl_fd("Error: Failed to send signal", 2);
+				exit(1);
+			}
+		}
+		c = c >> 1;
+		usleep(1000);
+		i++;
+	}
+}
+
+static void	send_message(pid_t pid, const char *str)
+{
+	while (*str)
+	{
+		send_bit(pid, *str);
+		str++;
+	}
+}
 
 static bool	is_valid_pid(const char *str)
 {
@@ -68,18 +113,20 @@ static bool	is_valid_pid(const char *str)
 
 int	main(int argc, char const *argv[])
 {
+	pid_t	pid;
+
 	if (argc != 3 || !is_valid_pid(argv[1]))
 	{
-		ft_putstr_fd("Error: Invalid arguments\n", 2);
-		ft_putstr_fd("Usage: ./client [server PID] [message]\n", 2);
+		ft_putendl_fd("Error: Invalid arguments", 2);
+		ft_putendl_fd("Usage: ./client [server PID] [message]", 2);
 		return (1);
 	}
+	pid = ft_atoi(argv[1]);
+	if (kill(pid, 0) < 0)
+	{
+		ft_putendl_fd("Error: Invalid PID", 2);
+		return (1);
+	}
+	send_message(pid, argv[2]);
 	return (0);
 }
-
-/*
-Chapter V Bonus part
-Bonus list:
-• The server acknowledges every message received by sending back a signal to the client.
-• Unicode characters support!
- */

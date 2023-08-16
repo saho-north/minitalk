@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/15 12:34:38 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 04:00:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,23 +48,60 @@ Quickly means that if you think it takes too long, then it is probably too long.
 • You can only use these two signals: SIGUSR1 and SIGUSR2.
 1 second for displaying 100 characters is way too much!
 Linux system does NOT queue signals when you already have pending signals of this type!  Bonus time?
- */
 
-int	main(void)
-{
-	printf("server pid: %d\n", getpid());
-	//receive signal from client
-	//signal() returns the previous value of the signal handler,
-	//	or SIG_ERR on error.
-	// SIGUSR1: user-defined signal 1
-	// SIGUSR2: user-defined signal 2
-	// print the string received from client
-	return (0);
-}
-
-/*
 Chapter V Bonus part
 Bonus list:
 • The server acknowledges every message received by sending back a signal to the client.
 • Unicode characters support!
  */
+
+static void	signal_action(int sig, siginfo_t *info, void *ucontext)
+{
+	static size_t	bits_count;
+	static char		current_char;
+
+	(void)ucontext;
+	(void)info;
+	printf("before sig: %d, bits_count: %zu, current_char: %c\n", sig,
+			bits_count, current_char);
+	printf("sig: %d, bits_count: %zu, current_char: %c\n", sig, bits_count,
+			current_char);
+	if (sig == SIGUSR1)
+		current_char = (current_char << 1) | 1;
+	else if (sig == SIGUSR2)
+		current_char = (current_char << 1) | 0;
+	bits_count++;
+	printf("after  sig: %d, bits_count: %zu, current_char: %c\n\n", sig,
+			bits_count, current_char);
+	if (bits_count == 8)
+	{
+		if (write(1, &current_char, 1) == -1)
+		{
+			ft_putendl_fd("Error: write failed", 2);
+			exit(1);
+		}
+		current_char = 0;
+		bits_count = 0;
+	}
+}
+
+int	main(void)
+{
+	struct sigaction	sa;
+	pid_t				pid;
+
+	sa.sa_sigaction = signal_action;
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+	if (sigaction(SIGUSR1, &sa, NULL) < 0 || sigaction(SIGUSR2, &sa, NULL) < 0)
+	{
+		ft_putendl_fd("Error: sigaction failed", 2);
+		return (1);
+	}
+	pid = getpid();
+	ft_putnbr_fd(pid, 1);
+	ft_putchar_fd('\n', 1);
+	while (1)
+		pause();
+	return (0);
+}

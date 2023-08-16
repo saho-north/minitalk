@@ -1,4 +1,4 @@
-NAME	 = $(CLIENT) $(SERVER)
+NAME	 = minitalk
 CLIENT	 = client
 SERVER	 = server
 CC		 = cc
@@ -21,6 +21,8 @@ SRCS_SERVER = $(SERVER).c
 OBJS_COMMON = $(SRCS_COMMON:.c=.o)
 OBJS_CLIENT = $(SRCS_CLIENT:.c=.o)
 OBJS_SERVER = $(SRCS_SERVER:.c=.o)
+
+$(NAME): $(CLIENT) $(SERVER)
 
 $(CLIENT): $(OBJS_CLIENT) $(OBJS_COMMON) $(LIBFT)
 	$(CC) $(CFLAGS) $^ -o $@ $(LIBRARY)
