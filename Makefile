@@ -57,9 +57,6 @@ testclient: $(CLIENT) clean
 test: $(NAME)
 	./$(SERVER) & echo $$! > .server_pid
 	sleep 1
-	./$(CLIENT) `cat .server_pid` A
-	#rm -f .server_pid
-
-
+	./$(CLIENT) `cat .server_pid` "Hello World"
 
 .PHONY: all clean fclean re test testserver testclient
