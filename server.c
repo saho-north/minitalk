@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 19:41:23 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 22:22:55 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 	{
 		if (c != 0x03)
 			ft_putchar_fd(c, 1);
+		else
+			ft_putchar_fd('\n', 1); // for debug
 		c = 0;
 		bits_count = 0;
 	}

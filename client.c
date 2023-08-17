@@ -6,69 +6,59 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 19:41:08 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/18 02:52:29 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 #include <stdio.h>
 
-// one global variable allowed for communication between the handler and the main program
-//static int	g_sig;
+volatile sig_atomic_t	g_signal_status;
 
-/*
-• In order to complete the mandatory part,
-	you are allowed to use the following functions:
-◦ write
-◦ ft_printf and any equivalent YOU coded
-◦ signal
-◦ sigemptyset
-◦ sigaddset
-◦ sigaction
-◦ kill
-◦ getpid
-◦ malloc
-◦ free
-◦ pause
-◦ sleep
-◦ usleep
-◦ exit
+static void	signal_handler(int sig)
+{
+	if (sig == SIGUSR1)
+	{
+		g_signal_status = 0;
+	}
+	else if (sig == SIGUSR2)
+	{
+		g_signal_status = 1;
+	}
+}
 
-Mandatory Part
-You must create a communication program in the form of a client and a server.
-• The server must be started first. After its launch, it has to print its PID.
+static bool	is_responce_valid(void)
+{
+	size_t	timeout_counter;
 
-• The client takes two parameters:
-	◦ The server PID.
-	◦ The string to send.
-
-• The client must send the string passed as a parameter to the server.
-Once the string has been received, the server must print it.
-
-• The server has to display the string pretty quickly.
-Quickly means that if you think it takes too long, then it is probably too long.
-
-• The communication between your client and your server has to be done only using UNIX signals.
-• You can only use these two signals: SIGUSR1 and SIGUSR2.
-1 second for displaying 100 characters is way too much!
-Linux system does NOT queue signals when you already have pending
-signals of this type!  Bonus time?
-
-
-Chapter V Bonus part
-Bonus list:
-• The server acknowledges every message received by sending back a signal to the client.
-• Unicode characters support!
-
- */
+	timeout_counter = 0;
+	while (g_signal_status == -1)
+	{
+		if (timeout_counter * SLEEP_DURATION > TIMEOUT_LIMIT)
+		{
+			ft_putendl_fd("Error: Timeout", 2);
+			exit(1);
+		}
+		usleep(SLEEP_DURATION);
+		timeout_counter++;
+	}
+	if (g_signal_status == 0)
+	{
+		ft_putendl_fd("Error: Failed to send signal", 2);
+		exit(1);
+	}
+	return (true);
+}
 
 static void	transmit_char(pid_t pid, char c)
 {
 	size_t	bit_index;
 
+	g_signal_status = 1;
 	bit_index = 8;
-	while (bit_index-- > 0)
+	while (bit_index-- > 0 && is_responce_valid())
 	{
+		g_signal_status = -1;
 		if ((c >> bit_index) & 1)
 		{
 			if (kill(pid, SIGUSR2) < 0)
@@ -85,35 +75,24 @@ static void	transmit_char(pid_t pid, char c)
 				exit(1);
 			}
 		}
-		usleep(SLEEP_DURATION);
 	}
 }
 
 static void	send_message(pid_t pid, const char *str)
 {
+	transmit_char(pid, 0x02);
 	while (*str)
 	{
 		transmit_char(pid, *str);
-		//一文字ごとの確認応答を後でここに追加する
 		str++;
 	}
 	transmit_char(pid, 0x03);
 }
 
-static bool	is_valid_pid(const char *str)
-{
-	while (*str)
-	{
-		if (!ft_isdigit(*str))
-			return (false);
-		str++;
-	}
-	return (true);
-}
-
 int	main(int argc, char const *argv[])
 {
-	pid_t	pid;
+	struct sigaction	sa;
+	pid_t				pid;
 
 	if (argc != 3 || !is_valid_pid(argv[1]))
 	{
@@ -127,6 +106,11 @@ int	main(int argc, char const *argv[])
 		ft_putendl_fd("Error: Invalid PID", 2);
 		return (1);
 	}
+	sa.sa_handler = signal_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	send_message(pid, argv[2]);
 	return (0);
 }

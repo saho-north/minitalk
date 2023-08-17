@@ -15,7 +15,7 @@ HDR_DIR	 = ./
 HDR		 = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
 SRCS_COMMON = minitalk_utils.c
-SRCS_CLIENT = $(CLIENT).c
+SRCS_CLIENT = $(CLIENT).c is_valid_pid.c
 SRCS_SERVER = $(SERVER).c
 
 OBJS_COMMON = $(SRCS_COMMON:.c=.o)
@@ -58,5 +58,7 @@ test: $(NAME)
 	./$(SERVER) & echo $$! > .server_pid
 	sleep 1
 	./$(CLIENT) `cat .server_pid` "Hello World"
+	kill `cat .server_pid`
+	kill -0 `cat .server_pid` 2>/dev/null && echo "Server still running" || echo "Server killed"
 
 .PHONY: all clean fclean re test testserver testclient
