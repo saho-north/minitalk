@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 16:10:49 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 16:54:51 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,14 @@ Bonus list:
 
  */
 
-static void	send_bit(pid_t pid, char c)
+static void	transmit_char(pid_t pid, char c)
 {
-	int	i;
+	size_t	bit_index;
 
-	i = 0;
-	while (i < 8)
+	bit_index = 8;
+	while (bit_index-- > 0)
 	{
-		if (c & 1)
+		if ((c >> bit_index) & 1)
 		{
 			if (kill(pid, SIGUSR2) < 0)
 			{
@@ -85,9 +85,7 @@ static void	send_bit(pid_t pid, char c)
 				exit(1);
 			}
 		}
-		c = c >> 1;
-		usleep(1000);
-		i++;
+		usleep(SLEEP_DURATION);
 	}
 }
 
@@ -95,7 +93,7 @@ static void	send_message(pid_t pid, const char *str)
 {
 	while (*str)
 	{
-		send_bit(pid, *str);
+		transmit_char(pid, *str);
 		str++;
 	}
 }
