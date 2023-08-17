@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 18:45:56 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 19:07:17 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ static void	transmit_char(pid_t pid, char c)
 	{
 		if ((c >> bit_index) & 1)
 		{
+			printf("1 for bit_index: %zu\n", bit_index);
 			if (kill(pid, SIGUSR2) < 0)
 			{
 				ft_putendl_fd("Error: Failed to send signal", 2);
@@ -79,6 +80,7 @@ static void	transmit_char(pid_t pid, char c)
 		}
 		else
 		{
+			printf("0 for bit_index: %zu\n", bit_index);
 			if (kill(pid, SIGUSR1) < 0)
 			{
 				ft_putendl_fd("Error: Failed to send signal", 2);
@@ -95,6 +97,7 @@ static void	send_message(pid_t pid, const char *str)
 	{
 		transmit_char(pid, *str);
 		//一文字ごとの確認応答を後でここに追加する
+		printf("\n");
 		str++;
 	}
 	transmit_char(pid, 0x03);
