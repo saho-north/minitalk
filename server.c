@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 19:01:34 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 19:36:55 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,36 +58,20 @@ Bonus list:
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	static size_t	bits_count;
-	static char		current_char;
+	static char		c;
 
 	(void)ucontext;
 	(void)info;
-	//printf("before sig: %d, bits_count: %zu, current_char: %c\n", sig,
-	//	bits_count, current_char);
-	//printf("sig: %d, bits_count: %zu, current_char: %c\n", sig, bits_count,
-	//	current_char);
-	if (sig == SIGUSR1)
+	if (sig == SIGUSR2)
 	{
-		//printf("sig == SIGUSR1\n");
-		current_char = (current_char << 1) | 1;
-	}
-	else if (sig == SIGUSR2)
-	{
-		//printf("sig == SIGUSR2\n");
-		current_char = (current_char << 1) | 0;
+		c |= 1 << (7 - bits_count);
 	}
 	bits_count++;
-	/* printf("after  sig: %d, bits_count: %zu, current_char: %c\n\n", sig,
-			bits_count, current_char);
-		*/
 	if (bits_count == 8)
 	{
-		if (write(1, &current_char, 1) == -1)
-		{
-			ft_putendl_fd("Error: write failed", 2);
-			exit(1);
-		}
-		current_char = 0;
+		if (c != 0x03)
+			ft_putchar_fd(c, 1);
+		c = 0;
 		bits_count = 0;
 	}
 }
@@ -107,7 +91,7 @@ int	main(void)
 	}
 	pid = getpid();
 	ft_putnbr_fd(pid, 1);
-	//ft_putchar_fd('\n', 1);
+	ft_putchar_fd('\n', 1);
 	while (1)
 		pause();
 	return (0);
