@@ -6,14 +6,14 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/18 02:52:29 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/18 03:52:24 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 #include <stdio.h>
 
-volatile sig_atomic_t	g_signal_status;
+static volatile sig_atomic_t	g_signal_status;
 
 static void	signal_handler(int sig)
 {
@@ -27,7 +27,7 @@ static void	signal_handler(int sig)
 	}
 }
 
-static bool	is_responce_valid(void)
+static t_signal_acknowledgement	is_responce_valid(void)
 {
 	size_t	timeout_counter;
 
@@ -43,11 +43,8 @@ static bool	is_responce_valid(void)
 		timeout_counter++;
 	}
 	if (g_signal_status == 0)
-	{
-		ft_putendl_fd("Error: Failed to send signal", 2);
-		exit(1);
-	}
-	return (true);
+		return (SERVER_BUSY);
+	return (SIGNAL_RECEIVED);
 }
 
 static void	transmit_char(pid_t pid, char c)
@@ -56,7 +53,7 @@ static void	transmit_char(pid_t pid, char c)
 
 	g_signal_status = 1;
 	bit_index = 8;
-	while (bit_index-- > 0 && is_responce_valid())
+	while (bit_index-- > 0)
 	{
 		g_signal_status = -1;
 		if ((c >> bit_index) & 1)
@@ -74,6 +71,11 @@ static void	transmit_char(pid_t pid, char c)
 				ft_putendl_fd("Error: Failed to send signal", 2);
 				exit(1);
 			}
+		}
+		if (is_responce_valid() == SERVER_BUSY)
+		{
+			usleep(SLEEP_DURATION);
+			continue ;
 		}
 	}
 }

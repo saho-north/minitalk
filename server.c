@@ -6,16 +6,14 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 22:22:55 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/18 04:43:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 #include <stdio.h>
 
-// only one global variable is allowed for signal handler?
-//static int	g_sig = 0;
-
+static volatile sig_atomic_t	g_pid_status;
 /*
 • In order to complete the mandatory part,
 	you are allowed to use the following functions:
@@ -66,6 +64,7 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 	{
 		c |= 1 << (7 - bits_count);
 	}
+	kill(info->si_pid, SIGUSR2);
 	bits_count++;
 	if (bits_count == 8)
 	{
