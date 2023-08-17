@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 04:00:52 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 04:42:04 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,15 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 	printf("sig: %d, bits_count: %zu, current_char: %c\n", sig, bits_count,
 			current_char);
 	if (sig == SIGUSR1)
+	{
+		printf("sig == SIGUSR1\n");
 		current_char = (current_char << 1) | 1;
+	}
 	else if (sig == SIGUSR2)
+	{
+		printf("sig == SIGUSR2\n");
 		current_char = (current_char << 1) | 0;
+	}
 	bits_count++;
 	printf("after  sig: %d, bits_count: %zu, current_char: %c\n\n", sig,
 			bits_count, current_char);
