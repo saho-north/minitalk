@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 04:04:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 16:10:49 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static void	send_bit(pid_t pid, char c)
 	{
 		if (c & 1)
 		{
-			if (kill(pid, SIGUSR1) < 0)
+			if (kill(pid, SIGUSR2) < 0)
 			{
 				ft_putendl_fd("Error: Failed to send signal", 2);
 				exit(1);
@@ -79,7 +79,7 @@ static void	send_bit(pid_t pid, char c)
 		}
 		else
 		{
-			if (kill(pid, SIGUSR2) < 0)
+			if (kill(pid, SIGUSR1) < 0)
 			{
 				ft_putendl_fd("Error: Failed to send signal", 2);
 				exit(1);
