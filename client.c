@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/17 16:54:51 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/17 17:25:11 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ static void	send_message(pid_t pid, const char *str)
 		transmit_char(pid, *str);
 		str++;
 	}
+	transmit_char(pid, 0x03);
 }
 
 static bool	is_valid_pid(const char *str)
