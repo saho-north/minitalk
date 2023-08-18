@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/19 00:09:35 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/19 03:47:15 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,9 @@ Bonus list:
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
-	static size_t	bits_count;
-	static char		c;
+	static volatile sig_atomic_t	bits_count;
+	static volatile sig_atomic_t	c;
+	char							tmp;
 
 	(void)ucontext;
 	(void)info;
@@ -74,14 +75,15 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 	{
 		c |= 1 << (7 - bits_count);
 	}
-	//acknowledgement
-	// kill(info->si_pid, SIGUSR2);
+	//受信ができたら、受信したことをクライアントに通知する（ACK）
+	kill(info->si_pid, SIGUSR2);
 	bits_count++;
 	if (bits_count == 8)
 	{
-		if (c != 0x02 && c != 0x03)
-			write(1, &c, 1);
-		else if (c == 0x03)
+		tmp = c;
+		if (tmp != 0x02 && tmp != 0x03)
+			write(1, &tmp, 1);
+		else if (tmp == 0x03)
 			write(1, "\n", 1);
 		c = 0;
 		bits_count = 0;

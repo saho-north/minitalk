@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/18 23:00:39 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/19 03:51:43 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@
 typedef enum e_signal_acknowledgement
 {
 	SERVER_BUSY,
-	SIGNAL_RECEIVED
+	SIGNAL_RECEIVED,
+	WAITING_FOR_ACK
 }		t_signal_acknowledgement;
 
 bool	is_valid_pid(const char *str);
