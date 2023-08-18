@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/18 22:54:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/19 00:09:35 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 		c |= 1 << (7 - bits_count);
 	}
 	//acknowledgement
-	kill(info->si_pid, SIGUSR2);
+	// kill(info->si_pid, SIGUSR2);
 	bits_count++;
 	if (bits_count == 8)
 	{

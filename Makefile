@@ -14,7 +14,7 @@ HDR_LIST = minitalk.h
 HDR_DIR	 = ./
 HDR		 = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
-SRCS_COMMON = minitalk_utils.c
+SRCS_COMMON = minitalk_utils.c write_bi_char.c
 SRCS_CLIENT = $(CLIENT).c is_valid_pid.c
 SRCS_SERVER = $(SERVER).c
 
