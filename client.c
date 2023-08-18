@@ -6,12 +6,22 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/18 03:52:24 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/18 22:27:57 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
-#include <stdio.h>
+
+/*
+- ACKは大体実装できたはずである
+- ACKを送る前に、strの長さを送る実装を後で行う
+- mallocの成否を受け取る実装が必要
+- 送信する文字列の長さが、intの範囲を超える場合の実装が必要
+- Unicode characters supportの実装が必要 <- やり方がわからないのでリサーチする
+- 1 second for displaying 100 characters is way too much! <- これは、sleepの時間を短くすることで解決できるはず
+- timeoutの時に、一定回数は再送を試みる実装が必要（serverのmalloc中には確認応答しないため）
+
+ */
 
 static volatile sig_atomic_t	g_signal_status;
 
@@ -111,8 +121,12 @@ int	main(int argc, char const *argv[])
 	sa.sa_handler = signal_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
+	if (sigaction(SIGUSR1, &sa, NULL) < 0 || sigaction(SIGUSR2, &sa, NULL) < 0)
+	{
+		ft_putendl_fd("Error: sigaction failed", 2);
+		return (1);
+	}
+	//send_messageの前に、strの長さを送る実装を後で行う
 	send_message(pid, argv[2]);
 	return (0);
 }

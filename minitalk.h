@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/18 03:50:48 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/18 22:27:17 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # define SLEEP_DURATION 1000
 # define TIMEOUT_LIMIT 1000000
 
+//後でtimeoutの実装を行う
 typedef enum e_signal_acknowledgement
 {
 	SERVER_BUSY,
