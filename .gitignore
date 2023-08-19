@@ -52,3 +52,5 @@ Mkfile.old
 dkms.conf
 note.txt
 .server_pid
+.vscode/
+```
