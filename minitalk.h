@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/20 00:16:33 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/20 01:50:10 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@
 # define SLEEP_DURATION 1000
 # define TIMEOUT_LIMIT 1000000
 
-//後でtimeoutの実装を行う
 typedef enum e_signal_acknowledgement
 {
-	SERVER_BUSY,
-	SIGNAL_RECEIVED,
-	WAITING_FOR_ACK
+	ACK_SERVER_BUSY,
+	ACK_RECEIVED,
+	ACK_TIME_OUT,
+	ACK_WAITING
 }		t_signal_acknowledgement;
 
 typedef enum e_error_type

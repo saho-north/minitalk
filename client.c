@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/20 00:16:12 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/20 01:49:57 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@
 - Unicode characters supportの実装が必要 <- やり方がわからないのでリサーチする
 - 1 second for displaying 100 characters is way too much! <- これは、sleepの時間を短くすることで解決できるはず
 - timeoutの時に、一定回数は再送を試みる実装が必要（serverのmalloc中には確認応答しないため）
-
- */
+*/
 
 static volatile sig_atomic_t	g_signal_status;
 
@@ -29,31 +28,32 @@ static void	signal_handler(int sig)
 {
 	if (sig == SIGUSR1)
 	{
-		g_signal_status = SERVER_BUSY;
+		g_signal_status = ACK_SERVER_BUSY;
 	}
 	else if (sig == SIGUSR2)
 	{
-		g_signal_status = SIGNAL_RECEIVED;
+		g_signal_status = ACK_RECEIVED;
 	}
 }
 
-static t_signal_acknowledgement	is_responce_valid(void)
+static t_signal_acknowledgement	is_signal_acknowledged(void)
 {
-	size_t	timeout_counter;
+	size_t	sleep_count;
 
-	timeout_counter = 0;
-	while (g_signal_status == WAITING_FOR_ACK)
+	sleep_count = 0;
+	while (1)
 	{
 		usleep(SLEEP_DURATION);
-		if (timeout_counter * SLEEP_DURATION > TIMEOUT_LIMIT)
+		if (g_signal_status != ACK_WAITING)
+			break ;
+		sleep_count++;
+		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
 		{
-			exit_with_error(TIMEOUT);
+			g_signal_status = ACK_TIME_OUT;
+			break ;
 		}
-		timeout_counter++;
 	}
-	if (g_signal_status == 0)
-		return (SERVER_BUSY);
-	return (SIGNAL_RECEIVED);
+	return (g_signal_status);
 }
 
 static void	transmit_char(pid_t pid, char c)
@@ -65,36 +65,25 @@ static void	transmit_char(pid_t pid, char c)
 	counter_for_retry = 0;
 	while (bit_index-- > 0)
 	{
-		g_signal_status = -1;
+		g_signal_status = ACK_WAITING;
 		if ((c >> bit_index) & 1)
 		{
-			//ft_putchar_fd('1', 1);
 			if (kill(pid, SIGUSR2) < 0)
-			{
 				exit_with_error(KILL_FAIL);
-			}
 		}
 		else
 		{
-			//ft_putchar_fd('0', 1);
 			if (kill(pid, SIGUSR1) < 0)
-			{
 				exit_with_error(KILL_FAIL);
-			}
 		}
-		if (is_responce_valid() != SIGNAL_RECEIVED)
+		if (is_signal_acknowledged() != ACK_RECEIVED)
 		{
 			counter_for_retry++;
 			if (counter_for_retry > 10)
-			{
-				//エラー処理の名前に何が相応しいかいまいち何かわからない
-				ft_putendl_fd("Error: Failed to send signal", 2);
-				exit(1);
-			}
-			continue ;
+				exit_with_error(TIMEOUT);
+			bit_index++;
 		}
 	}
-	//ft_putchar_fd('\n', 1);
 }
 
 static void	send_message(pid_t pid, const char *str)
