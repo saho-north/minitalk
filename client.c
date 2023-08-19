@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/19 05:28:54 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/20 00:16:12 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,40 +24,6 @@
  */
 
 static volatile sig_atomic_t	g_signal_status;
-
-static void	exit_with_error(t_error_type error_type)
-{
-	const char	*message[10];
-
-	message[TOO_MANY_ARGS] = "Error: Too many arguments";
-	message[TOO_FEW_ARGS] = "Error: Too few arguments";
-	message[NOT_VALID_PID] = "Error: Invalid PID";
-	message[NOT_VALID_STRING] = "Error: Invalid string";
-	message[NOT_VALID_CHAR] = "Error: Invalid char";
-	message[KILL_FAILED] = "Error: Failed to send signal";
-	ft_putendl_fd(message[error_type], 2);
-	exit(1);
-}
-
-static void	exit_with_error(t_error_type error_type)
-{
-	const char *message[ERROR_TYPE_COUNT]; // サイズを ERROR_TYPE_COUNT に変更
-	message[TOO_MANY_ARGS] = "Error: Too many arguments";
-	message[TOO_FEW_ARGS] = "Error: Too few arguments";
-	message[NOT_VALID_PID] = "Error: Invalid PID";
-	message[NOT_VALID_STRING] = "Error: Invalid string";
-	message[NOT_VALID_CHAR] = "Error: Invalid char";
-	message[KILL_FAILED] = "Error: Failed to send signal";
-	if (error_type < ERROR_TYPE_COUNT)
-	{ // 追加: エラーの範囲のチェック
-		ft_putendl_fd(message[error_type], 2);
-	}
-	else
-	{
-		ft_putendl_fd("Error: Unknown error", 2); // 追加: 未定義のエラーケース
-	}
-	exit(1);
-}
 
 static void	signal_handler(int sig)
 {
@@ -81,8 +47,7 @@ static t_signal_acknowledgement	is_responce_valid(void)
 		usleep(SLEEP_DURATION);
 		if (timeout_counter * SLEEP_DURATION > TIMEOUT_LIMIT)
 		{
-			ft_putendl_fd("Error: Timeout", 2);
-			exit(1);
+			exit_with_error(TIMEOUT);
 		}
 		timeout_counter++;
 	}
@@ -106,8 +71,7 @@ static void	transmit_char(pid_t pid, char c)
 			//ft_putchar_fd('1', 1);
 			if (kill(pid, SIGUSR2) < 0)
 			{
-				ft_putendl_fd("Error: Failed to send signal", 2);
-				exit(1);
+				exit_with_error(KILL_FAIL);
 			}
 		}
 		else
@@ -115,8 +79,7 @@ static void	transmit_char(pid_t pid, char c)
 			//ft_putchar_fd('0', 1);
 			if (kill(pid, SIGUSR1) < 0)
 			{
-				ft_putendl_fd("Error: Failed to send signal", 2);
-				exit(1);
+				exit_with_error(KILL_FAIL);
 			}
 		}
 		if (is_responce_valid() != SIGNAL_RECEIVED)
@@ -124,6 +87,7 @@ static void	transmit_char(pid_t pid, char c)
 			counter_for_retry++;
 			if (counter_for_retry > 10)
 			{
+				//エラー処理の名前に何が相応しいかいまいち何かわからない
 				ft_putendl_fd("Error: Failed to send signal", 2);
 				exit(1);
 			}
@@ -152,22 +116,19 @@ int	main(int argc, char const *argv[])
 
 	if (argc != 3 || !is_valid_pid(argv[1]))
 	{
-		ft_putendl_fd("Usage: ./client [server PID] [message]", 2);
-		return (1);
+		exit_with_error(NOT_VALID_ARGS);
 	}
 	pid = ft_atoi(argv[1]);
 	if (pid < 1 || kill(pid, 0) < 0)
 	{
-		ft_putendl_fd("Error: Invalid PID", 2);
-		return (1);
+		exit_with_error(NOT_VALID_PID);
 	}
 	sa.sa_handler = signal_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	if (sigaction(SIGUSR1, &sa, NULL) < 0 || sigaction(SIGUSR2, &sa, NULL) < 0)
 	{
-		ft_putendl_fd("Error: sigaction failed", 2);
-		return (1);
+		exit_with_error(SIGACTION_FAIL);
 	}
 	send_message(pid, argv[2]);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/19 03:47:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/20 00:10:43 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,7 @@ int	main(void)
 	sa.sa_flags = SA_SIGINFO;
 	if (sigaction(SIGUSR1, &sa, NULL) < 0 || sigaction(SIGUSR2, &sa, NULL) < 0)
 	{
-		ft_putendl_fd("Error: sigaction failed", 2);
-		return (1);
+		exit_with_error(SIGACTION_FAIL);
 	}
 	pid = getpid();
 	ft_putnbr_fd(pid, 1);

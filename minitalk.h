@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/19 05:28:50 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/20 00:16:33 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,19 @@ typedef enum e_signal_acknowledgement
 
 typedef enum e_error_type
 {
-	TOO_MANY_ARGS,
-	TOO_FEW_ARGS,
+	SIGACTION_FAIL,
+	NOT_VALID_ARGS,
 	NOT_VALID_PID,
 	NOT_VALID_STRING,
 	NOT_VALID_CHAR,
-	KILL_FAILED,
+	KILL_FAIL,
+	TIMEOUT,
 	ERROR_TYPE_COUNT
 }		t_error_type;
 
 bool	is_valid_pid(const char *str);
 //デバッグ用
 void	write_binary_char(char c, int fd);
+void	exit_with_error(t_error_type error_type);
 
 #endif
