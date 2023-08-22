@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/20 01:49:57 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/22 05:48:54 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,10 @@
 
 static volatile sig_atomic_t	g_signal_status;
 
-static void	signal_handler(int sig)
+static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
+	(void)ucontext;
+	(void)info;
 	if (sig == SIGUSR1)
 	{
 		g_signal_status = ACK_SERVER_BUSY;
@@ -112,9 +114,9 @@ int	main(int argc, char const *argv[])
 	{
 		exit_with_error(NOT_VALID_PID);
 	}
-	sa.sa_handler = signal_handler;
+	sa.sa_sigaction = signal_action;
 	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
+	sa.sa_flags = SA_SIGINFO;
 	if (sigaction(SIGUSR1, &sa, NULL) < 0 || sigaction(SIGUSR2, &sa, NULL) < 0)
 	{
 		exit_with_error(SIGACTION_FAIL);
