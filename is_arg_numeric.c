@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   is_valid_pid.c                                     :+:      :+:    :+:   */
+/*   is_arg_numeric.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/18 02:51:28 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/18 02:51:38 by sakitaha         ###   ########.fr       */
+/*   Created: 2023/08/23 22:38:56 by sakitaha          #+#    #+#             */
+/*   Updated: 2023/08/23 22:39:18 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-bool	is_valid_pid(const char *str)
+bool	is_arg_numeric(const char *str)
 {
 	while (*str)
 	{

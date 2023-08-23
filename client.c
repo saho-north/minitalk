@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 02:58:44 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 22:38:10 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ static void	send_message(pid_t pid, const char *str)
 int	main(int argc, char const *argv[])
 {
 	bzero(&g_server_status, sizeof(g_server_status));
-	if (argc != 3 || !is_valid_pid(argv[1]))
+	if (argc != 3 || !is_arg_numeric(argv[1]))
 	{
 		exit_with_error(NOT_VALID_ARGS);
 	}
