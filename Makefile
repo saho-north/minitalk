@@ -14,9 +14,9 @@ HDR_LIST = minitalk.h server.h client.h
 HDR_DIR	 = ./
 HDR		 = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
-SRCS_COMMON = exit_with_error.c init_sig.c
+SRCS_COMMON = exit_with_error.c init_sigaction.c
 SRCS_CLIENT = $(CLIENT).c is_arg_numeric.c
-SRCS_SERVER = $(SERVER).c
+SRCS_SERVER = $(SERVER).c handle_bit.c
 
 OBJS_COMMON = $(SRCS_COMMON:.c=.o)
 OBJS_CLIENT = $(SRCS_CLIENT:.c=.o)

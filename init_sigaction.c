@@ -12,7 +12,7 @@
 
 #include "minitalk.h"
 
-void	init_sig(void (*signal_action)(int, siginfo_t *, void *))
+void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
 {
 	struct sigaction	sa;
 

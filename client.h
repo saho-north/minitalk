@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 06:28:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 06:37:39 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 07:17:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,5 +24,7 @@ typedef enum e_signal_acknowledgement
 }								t_signal_acknowledgement;
 
 extern volatile t_signal_data	g_signal_data;
+
+bool							is_arg_numeric(const char *str);
 
 #endif

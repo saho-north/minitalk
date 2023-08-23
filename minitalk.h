@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 07:12:00 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 07:27:15 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,7 @@ typedef struct s_signal_data
 	volatile sig_atomic_t	signal_status;
 }							t_signal_data;
 
-bool						is_arg_numeric(const char *str);
 void						exit_with_error(t_error_type error_type);
-void						init_sig(void (*action)(int, siginfo_t *, void *));
+void						init_sigaction(void (*a)(int, siginfo_t *, void *));
 
 #endif
