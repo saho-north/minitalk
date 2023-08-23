@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 03:49:35 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 05:22:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,36 +61,54 @@ Bonus list:
 • Unicode characters support!
  */
 
-typedef struct s_client_data
-{
-	volatile sig_atomic_t		client_pid;
-	volatile sig_atomic_t		received_signal;
-}								t_client_data;
-
-static volatile t_client_data	g_client_status;
+static volatile t_signal_data	g_client_status;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
-	if (g_client_status.received_signal != -1)
+	if (g_client_status.signal_status != SIG_FOR_WAITING)
 	{
 		return ;
 	}
-	if (g_client_status.client_pid == 0)
+	if (g_client_status.current_pid == 0)
 	{
-		g_client_status.client_pid = info->si_pid;
+		g_client_status.current_pid = info->si_pid;
 	}
-	if (info->si_pid == g_client_status.client_pid)
+	else if (info->si_pid != g_client_status.current_pid)
 	{
-		if (sig == SIGUSR1)
-		{
-			g_client_status.received_signal = 0;
-		}
-		else if (sig == SIGUSR2)
-		{
-			g_client_status.received_signal = 1;
-		}
+		return ;
 	}
+	if (sig == SIGUSR1)
+	{
+		g_client_status.signal_status = SIG_FOR_ZERO_BIT;
+	}
+	else if (sig == SIGUSR2)
+	{
+		g_client_status.signal_status = SIG_FOR_ONE_BIT;
+	}
+}
+
+/*
+int	main(void)
+{
+    initialize_server(); // 初期化関数
+    while (1)
+    {
+        usleep(SLEEP_DURATION);
+        handle_bit(); // ビット処理関数
+        confirm_message(); // メッセージ送信確認関数
+    }
+    return (0);
+}
+ */
+
+void	initialize_server(void)
+{
+	g_client_status.current_pid = 0;
+	g_client_status.signal_status = SIG_FOR_WAITING;
+	init_sigaction(signal_action);
+	ft_putnbr_fd(getpid(), 1);
+	ft_putchar_fd('\n', 1);
 }
 
 int	main(void)
@@ -99,20 +117,16 @@ int	main(void)
 	char					current_char;
 	volatile sig_atomic_t	handled_bits_count;
 
+	initialize_server();
 	is_end_of_transmission = false;
 	current_char = 0;
 	handled_bits_count = 0;
-	g_client_status.client_pid = 0;
-	g_client_status.received_signal = -1;
-	init_sigaction(signal_action);
-	ft_putnbr_fd(getpid(), 1);
-	ft_putchar_fd('\n', 1);
 	while (1)
 	{
 		usleep(SLEEP_DURATION);
-		if (g_client_status.received_signal != -1)
+		if (g_client_status.signal_status != SIG_FOR_WAITING)
 		{
-			if (g_client_status.received_signal == 1)
+			if (g_client_status.signal_status == SIG_FOR_ONE_BIT)
 			{
 				current_char |= 1 << (7 - handled_bits_count);
 			}
@@ -129,12 +143,12 @@ int	main(void)
 				current_char = 0;
 				handled_bits_count = 0;
 			}
-			g_client_status.received_signal = -1;
-			if (kill(g_client_status.client_pid, SIGUSR2) < 0)
+			g_client_status.signal_status = SIG_FOR_WAITING;
+			if (kill(g_client_status.current_pid, SIGUSR2) < 0)
 				exit_with_error(KILL_FAIL);
 			if (is_end_of_transmission)
 			{
-				g_client_status.client_pid = 0;
+				g_client_status.current_pid = 0;
 				is_end_of_transmission = false;
 			}
 		}

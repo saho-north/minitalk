@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 00:06:29 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 00:55:51 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 04:31:35 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@ void	exit_with_error(t_error_type error_type)
 
 	message[SIGEMPTYSET_FAIL] = "Error: Failed to initialize signal set";
 	message[SIGACTION_FAIL] = "Error: Failed to set signal handler";
-	message[NOT_VALID_ARGS] = "Usage: ./client [server PID] [message]";
-	message[NOT_VALID_PID] = "Error: Invalid PID";
-	message[NOT_VALID_STRING] = "Error: Invalid string";
-	message[NOT_VALID_CHAR] = "Error: Invalid char";
+	message[INVALID_ARGS] = "Usage: ./client [server PID] [message]";
+	message[INVALID_PID] = "Error: Invalid PID";
+	message[INVALID_STRING] = "Error: Invalid string";
+	message[INVALID_CHAR] = "Error: Invalid char";
 	message[KILL_FAIL] = "Error: Failed to send signal";
 	message[TIMEOUT] = "Error: Timeout";
 	if (error_type < ERROR_TYPE_COUNT)

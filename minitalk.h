@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 00:56:04 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 04:31:42 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,23 +27,38 @@ typedef enum e_signal_acknowledgement
 	ACK_RECEIVED,
 	ACK_TIME_OUT,
 	ACK_WAITING
-}		t_signal_acknowledgement;
+}							t_signal_acknowledgement;
+
+typedef enum e_bit_signal
+{
+	SIG_FOR_ZERO_BIT,
+	SIG_FOR_ONE_BIT,
+	SIG_FOR_WAITING
+}							t_bit_signal;
 
 typedef enum e_error_type
 {
 	SIGEMPTYSET_FAIL,
 	SIGACTION_FAIL,
-	NOT_VALID_ARGS,
-	NOT_VALID_PID,
-	NOT_VALID_STRING,
-	NOT_VALID_CHAR,
+	INVALID_ARGS,
+	INVALID_PID,
+	INVALID_STRING,
+	INVALID_CHAR,
 	KILL_FAIL,
 	TIMEOUT,
 	ERROR_TYPE_COUNT
-}		t_error_type;
+}							t_error_type;
 
-bool	is_arg_numeric(const char *str);
-void	exit_with_error(t_error_type error_type);
-void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *));
+typedef struct s_signal_data
+{
+	volatile sig_atomic_t	current_pid;
+	volatile sig_atomic_t	signal_status;
+}							t_signal_data;
+
+bool						is_arg_numeric(const char *str);
+void						exit_with_error(t_error_type error_type);
+void	init_sigaction(void (*signal_action)(int,
+											siginfo_t *,
+											void *));
 
 #endif
