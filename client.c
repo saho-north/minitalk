@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/22 05:48:54 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 02:58:44 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,19 +22,26 @@
 - timeoutの時に、一定回数は再送を試みる実装が必要（serverのmalloc中には確認応答しないため）
 */
 
-static volatile sig_atomic_t	g_signal_status;
+typedef struct s_server_status
+{
+	volatile sig_atomic_t		server_pid;
+	volatile sig_atomic_t		server_ack_status;
+}								t_server_status;
+
+static t_server_status			g_server_status;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
-	(void)info;
+	if (info->si_pid != g_server_status.server_pid)
+		return ;
 	if (sig == SIGUSR1)
 	{
-		g_signal_status = ACK_SERVER_BUSY;
+		g_server_status.server_ack_status = ACK_SERVER_BUSY;
 	}
 	else if (sig == SIGUSR2)
 	{
-		g_signal_status = ACK_RECEIVED;
+		g_server_status.server_ack_status = ACK_RECEIVED;
 	}
 }
 
@@ -46,16 +53,16 @@ static t_signal_acknowledgement	is_signal_acknowledged(void)
 	while (1)
 	{
 		usleep(SLEEP_DURATION);
-		if (g_signal_status != ACK_WAITING)
+		if (g_server_status.server_ack_status != ACK_WAITING)
 			break ;
 		sleep_count++;
 		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
 		{
-			g_signal_status = ACK_TIME_OUT;
+			g_server_status.server_ack_status = ACK_TIME_OUT;
 			break ;
 		}
 	}
-	return (g_signal_status);
+	return (g_server_status.server_ack_status);
 }
 
 static void	transmit_char(pid_t pid, char c)
@@ -67,7 +74,7 @@ static void	transmit_char(pid_t pid, char c)
 	counter_for_retry = 0;
 	while (bit_index-- > 0)
 	{
-		g_signal_status = ACK_WAITING;
+		g_server_status.server_ack_status = ACK_WAITING;
 		if ((c >> bit_index) & 1)
 		{
 			if (kill(pid, SIGUSR2) < 0)
@@ -95,6 +102,7 @@ static void	send_message(pid_t pid, const char *str)
 	while (*str)
 	{
 		transmit_char(pid, *str);
+		usleep(SLEEP_DURATION);
 		str++;
 	}
 	transmit_char(pid, 0x03);
@@ -102,25 +110,21 @@ static void	send_message(pid_t pid, const char *str)
 
 int	main(int argc, char const *argv[])
 {
-	struct sigaction	sa;
-	pid_t				pid;
-
+	bzero(&g_server_status, sizeof(g_server_status));
 	if (argc != 3 || !is_valid_pid(argv[1]))
 	{
 		exit_with_error(NOT_VALID_ARGS);
 	}
-	pid = ft_atoi(argv[1]);
-	if (pid < 1 || kill(pid, 0) < 0)
+	g_server_status.server_pid = ft_atoi(argv[1]);
+	if (g_server_status.server_pid < 1)
 	{
 		exit_with_error(NOT_VALID_PID);
 	}
-	sa.sa_sigaction = signal_action;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_SIGINFO;
-	if (sigaction(SIGUSR1, &sa, NULL) < 0 || sigaction(SIGUSR2, &sa, NULL) < 0)
+	if (kill(g_server_status.server_pid, 0) < 0)
 	{
-		exit_with_error(SIGACTION_FAIL);
+		exit_with_error(NOT_VALID_PID);
 	}
-	send_message(pid, argv[2]);
+	init_sigaction(signal_action);
+	send_message(g_server_status.server_pid, argv[2]);
 	return (0);
 }

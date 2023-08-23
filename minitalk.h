@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/20 01:50:10 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 02:36:46 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,7 @@ typedef enum e_error_type
 }		t_error_type;
 
 bool	is_valid_pid(const char *str);
-//デバッグ用
-void	write_binary_char(char c, int fd);
 void	exit_with_error(t_error_type error_type);
+void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *));
 
 #endif

@@ -14,7 +14,7 @@ HDR_LIST = minitalk.h
 HDR_DIR	 = ./
 HDR		 = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
-SRCS_COMMON = minitalk_utils.c write_bi_char.c exit_with_error.c
+SRCS_COMMON = minitalk_utils.c exit_with_error.c init_sigaction.c
 SRCS_CLIENT = $(CLIENT).c is_valid_pid.c
 SRCS_SERVER = $(SERVER).c
 
@@ -54,10 +54,17 @@ testserver: $(SERVER) clean
 testclient: $(CLIENT) clean
 	./$(CLIENT) 1234 "Hello World"
 
-test: $(NAME)
+test0: $(NAME)
 	./$(SERVER) & echo $$! > .server_pid
 	sleep 1
-	./$(CLIENT) `cat .server_pid` "Hello World"
+	./$(CLIENT) `cat .server_pid` "test 0 > Hello World"
+	kill `cat .server_pid`
+	kill -0 `cat .server_pid` 2>/dev/null && echo "Server still running" || echo "Server killed"
+
+test1: $(NAME)
+	./$(SERVER) & echo $$! > .server_pid
+	sleep 1
+	./$(CLIENT) `cat .server_pid` "test 1 > abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	kill `cat .server_pid`
 	kill -0 `cat .server_pid` 2>/dev/null && echo "Server still running" || echo "Server killed"
 

@@ -6,12 +6,18 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/20 01:47:17 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 04:28:56 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
+// typedef struct s_client_status
+// {
+// 	volatile sig_atomic_t	current_client_pid;
+// }							t_client_status;
+
+// static t_client_status		g_client_status;
 /*
 Project instructions
 • Name your executable files client and server.
@@ -71,6 +77,8 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 
 	(void)ucontext;
 	(void)info;
+	if (kill(info->si_pid, SIGUSR2) < 0)
+		exit_with_error(KILL_FAIL);
 	if (sig == SIGUSR2)
 	{
 		current_char |= 1 << (7 - bits_count);
@@ -86,24 +94,13 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 		current_char = 0;
 		bits_count = 0;
 	}
-	kill(info->si_pid, SIGUSR2);
 }
 
 int	main(void)
 {
-	struct sigaction	sa;
-	pid_t				pid;
-
-	sa.sa_sigaction = signal_action;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_SIGINFO;
-	if (sigaction(SIGUSR1, &sa, NULL) < 0 || sigaction(SIGUSR2, &sa, NULL) < 0)
-	{
-		exit_with_error(SIGACTION_FAIL);
-	}
-	pid = getpid();
-	ft_putnbr_fd(pid, 1);
+	ft_putnbr_fd(getpid(), 1);
 	ft_putchar_fd('\n', 1);
+	init_sigaction(signal_action);
 	while (1)
 		pause();
 	return (0);

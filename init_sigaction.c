@@ -1,26 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   write_bi_char.c                                    :+:      :+:    :+:   */
+/*   init_sigaction.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/18 23:00:17 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/18 23:51:21 by sakitaha         ###   ########.fr       */
+/*   Created: 2023/08/23 01:27:45 by sakitaha          #+#    #+#             */
+/*   Updated: 2023/08/23 02:44:47 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
+#include "minitalk.h"
 
-//デバッグ用
-
-void	write_binary_char(char c, int fd)
+void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
 {
-	char	buffer[8];
+	struct sigaction	sa;
 
-	for (int i = 0; i < 8; i++)
-	{
-		buffer[7 - i] = (c & (1 << i)) ? '1' : '0';
-	}
-	write(fd, buffer, 8); // バッファを書き込み
+	bzero(&sa, sizeof(sa));
+	sa.sa_sigaction = signal_action;
+	sa.sa_flags = SA_SIGINFO;
+	sigemptyset(&sa.sa_mask);
+	if (sigaction(SIGUSR1, &sa, NULL) < 0)
+		exit_with_error(SIGACTION_FAIL);
+	if (sigaction(SIGUSR2, &sa, NULL) < 0)
+		exit_with_error(SIGACTION_FAIL);
 }
