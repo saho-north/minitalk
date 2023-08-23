@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 06:40:12 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 07:12:00 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "./libft/libft.h"
 # include <signal.h>
 # include <stdbool.h>
+# include <stddef.h>
 # include <unistd.h>
 
 # define SLEEP_DURATION 1000
