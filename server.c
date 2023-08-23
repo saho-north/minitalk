@@ -6,18 +6,12 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 04:28:56 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 23:01:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-// typedef struct s_client_status
-// {
-// 	volatile sig_atomic_t	current_client_pid;
-// }							t_client_status;
-
-// static t_client_status		g_client_status;
 /*
 Project instructions
 • Name your executable files client and server.
@@ -67,7 +61,12 @@ Bonus list:
 • Unicode characters support!
  */
 
-//static volatile sig_atomic_t	g_pid_status;
+typedef struct s_client_info
+{
+	volatile sig_atomic_t		client_pid;
+}								t_client_info;
+
+static volatile t_client_info	g_client_info;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
@@ -76,7 +75,16 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 	char							tmp;
 
 	(void)ucontext;
-	(void)info;
+	if (g_client_info.client_pid == 0)
+	{
+		//初回の呼び出しについて、client_pidを設定する
+		g_client_info.client_pid = info->si_pid;
+	}
+	else if (info->si_pid != g_client_info.client_pid)
+	{
+		//client_pidが設定されている場合、それ以外のPIDからのシグナルは無視する
+		return ;
+	}
 	if (kill(info->si_pid, SIGUSR2) < 0)
 		exit_with_error(KILL_FAIL);
 	if (sig == SIGUSR2)
@@ -90,7 +98,10 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 		if (tmp != 0x02 && tmp != 0x03)
 			write(1, &tmp, 1);
 		else if (tmp == 0x03)
+		{
 			write(1, "\n", 1);
+			g_client_info.client_pid = 0;
+		}
 		current_char = 0;
 		bits_count = 0;
 	}

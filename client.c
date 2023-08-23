@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 22:38:10 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 22:53:19 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct s_server_status
 	volatile sig_atomic_t		server_ack_status;
 }								t_server_status;
 
-static t_server_status			g_server_status;
+static volatile t_server_status	g_server_status;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
