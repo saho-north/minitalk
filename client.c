@@ -6,13 +6,13 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 06:18:02 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 06:36:58 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#include "client.h"
 
-static volatile t_signal_data	g_signal_data;
+volatile t_signal_data			g_signal_data;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {

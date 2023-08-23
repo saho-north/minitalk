@@ -10,7 +10,7 @@ LIBFT	 = $(LIBFT_DIR)libft.a
 LIBFT_DIR = ./libft/
 LIBFT_HDR = $(LIBFT_DIR)libft.h
 
-HDR_LIST = minitalk.h
+HDR_LIST = minitalk.h server.h client.h
 HDR_DIR	 = ./
 HDR		 = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
