@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 01:27:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 02:44:47 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 23:24:08 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
 {
 	struct sigaction	sa;
 
-	bzero(&sa, sizeof(sa));
+	ft_bzero(&sa, sizeof(sa));
 	sa.sa_sigaction = signal_action;
 	sa.sa_flags = SA_SIGINFO;
 	sigemptyset(&sa.sa_mask);

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 23:01:25 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/23 23:20:16 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ typedef struct s_client_info
 	volatile sig_atomic_t		client_pid;
 }								t_client_info;
 
-static volatile t_client_info	g_client_info;
+static volatile t_client_info	g_client_status;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
@@ -75,12 +75,12 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 	char							tmp;
 
 	(void)ucontext;
-	if (g_client_info.client_pid == 0)
+	if (g_client_status.client_pid == 0)
 	{
 		//初回の呼び出しについて、client_pidを設定する
-		g_client_info.client_pid = info->si_pid;
+		g_client_status.client_pid = info->si_pid;
 	}
-	else if (info->si_pid != g_client_info.client_pid)
+	else if (info->si_pid != g_client_status.client_pid)
 	{
 		//client_pidが設定されている場合、それ以外のPIDからのシグナルは無視する
 		return ;
@@ -100,7 +100,7 @@ static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 		else if (tmp == 0x03)
 		{
 			write(1, "\n", 1);
-			g_client_info.client_pid = 0;
+			g_client_status.client_pid = 0;
 		}
 		current_char = 0;
 		bits_count = 0;
