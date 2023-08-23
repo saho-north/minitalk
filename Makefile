@@ -48,13 +48,7 @@ fclean: clean
 
 re: fclean all
 
-testserver: $(SERVER) clean
-	./$(SERVER)
-
-testclient: $(CLIENT) clean
-	./$(CLIENT) 1234 "Hello World"
-
-test: pre_test test0 test1
+test: pre_test test0 test1 test2
 	kill `cat .server_pid`
 	kill -0 `cat .server_pid` 2>/dev/null && echo "Server still running" || echo "Server killed"
 
@@ -69,5 +63,8 @@ test1: $(NAME)
 	sleep 1
 	./$(CLIENT) `cat .server_pid` "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
+test2: $(NAME)
+	sleep 1
+	./$(CLIENT) `cat .server_pid` `python -c "print('a' * 10000)"`
 
-.PHONY: all clean fclean re test testserver testclient
+.PHONY: all clean fclean re test pre_test test0 test1 test2

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 23:20:16 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 03:49:35 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,58 +61,83 @@ Bonus list:
 • Unicode characters support!
  */
 
-typedef struct s_client_info
+typedef struct s_client_data
 {
 	volatile sig_atomic_t		client_pid;
-}								t_client_info;
+	volatile sig_atomic_t		received_signal;
+}								t_client_data;
 
-static volatile t_client_info	g_client_status;
+static volatile t_client_data	g_client_status;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
-	static volatile sig_atomic_t	bits_count;
-	static volatile sig_atomic_t	current_char;
-	char							tmp;
-
 	(void)ucontext;
-	if (g_client_status.client_pid == 0)
+	if (g_client_status.received_signal != -1)
 	{
-		//初回の呼び出しについて、client_pidを設定する
-		g_client_status.client_pid = info->si_pid;
-	}
-	else if (info->si_pid != g_client_status.client_pid)
-	{
-		//client_pidが設定されている場合、それ以外のPIDからのシグナルは無視する
 		return ;
 	}
-	if (kill(info->si_pid, SIGUSR2) < 0)
-		exit_with_error(KILL_FAIL);
-	if (sig == SIGUSR2)
+	if (g_client_status.client_pid == 0)
 	{
-		current_char |= 1 << (7 - bits_count);
+		g_client_status.client_pid = info->si_pid;
 	}
-	bits_count++;
-	if (bits_count == 8)
+	if (info->si_pid == g_client_status.client_pid)
 	{
-		tmp = current_char;
-		if (tmp != 0x02 && tmp != 0x03)
-			write(1, &tmp, 1);
-		else if (tmp == 0x03)
+		if (sig == SIGUSR1)
 		{
-			write(1, "\n", 1);
-			g_client_status.client_pid = 0;
+			g_client_status.received_signal = 0;
 		}
-		current_char = 0;
-		bits_count = 0;
+		else if (sig == SIGUSR2)
+		{
+			g_client_status.received_signal = 1;
+		}
 	}
 }
 
 int	main(void)
 {
+	bool					is_end_of_transmission;
+	char					current_char;
+	volatile sig_atomic_t	handled_bits_count;
+
+	is_end_of_transmission = false;
+	current_char = 0;
+	handled_bits_count = 0;
+	g_client_status.client_pid = 0;
+	g_client_status.received_signal = -1;
+	init_sigaction(signal_action);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putchar_fd('\n', 1);
-	init_sigaction(signal_action);
 	while (1)
-		pause();
+	{
+		usleep(SLEEP_DURATION);
+		if (g_client_status.received_signal != -1)
+		{
+			if (g_client_status.received_signal == 1)
+			{
+				current_char |= 1 << (7 - handled_bits_count);
+			}
+			handled_bits_count++;
+			if (handled_bits_count == 8)
+			{
+				if (current_char != 0x02 && current_char != 0x03)
+					write(1, &current_char, 1);
+				else if (current_char == 0x03)
+				{
+					write(1, "\n", 1);
+					is_end_of_transmission = true;
+				}
+				current_char = 0;
+				handled_bits_count = 0;
+			}
+			g_client_status.received_signal = -1;
+			if (kill(g_client_status.client_pid, SIGUSR2) < 0)
+				exit_with_error(KILL_FAIL);
+			if (is_end_of_transmission)
+			{
+				g_client_status.client_pid = 0;
+				is_end_of_transmission = false;
+			}
+		}
+	}
 	return (0);
 }

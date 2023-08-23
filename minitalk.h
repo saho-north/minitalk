@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 22:38:10 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 00:56:04 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef enum e_signal_acknowledgement
 
 typedef enum e_error_type
 {
+	SIGEMPTYSET_FAIL,
 	SIGACTION_FAIL,
 	NOT_VALID_ARGS,
 	NOT_VALID_PID,

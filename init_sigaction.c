@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 01:27:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/23 23:24:08 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 02:05:39 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,16 @@ void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
 	ft_bzero(&sa, sizeof(sa));
 	sa.sa_sigaction = signal_action;
 	sa.sa_flags = SA_SIGINFO;
-	sigemptyset(&sa.sa_mask);
+	if (sigemptyset(&sa.sa_mask) < 0)
+	{
+		exit_with_error(SIGEMPTYSET_FAIL);
+	}
 	if (sigaction(SIGUSR1, &sa, NULL) < 0)
+	{
 		exit_with_error(SIGACTION_FAIL);
+	}
 	if (sigaction(SIGUSR2, &sa, NULL) < 0)
+	{
 		exit_with_error(SIGACTION_FAIL);
+	}
 }
