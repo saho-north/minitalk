@@ -63,11 +63,11 @@ pre_test: $(NAME)
 
 test0: $(NAME)
 	sleep 1
-	./$(CLIENT) `cat .server_pid` "test 0 > Hello World"
+	./$(CLIENT) `cat .server_pid` "Hello World"
 
 test1: $(NAME)
 	sleep 1
-	./$(CLIENT) `cat .server_pid` "test 1 > abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	./$(CLIENT) `cat .server_pid` "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 
 .PHONY: all clean fclean re test testserver testclient
