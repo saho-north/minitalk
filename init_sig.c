@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_sigaction.c                                   :+:      :+:    :+:   */
+/*   init_sig.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 01:27:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 04:29:11 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 05:45:05 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
+void	init_sig(void (*signal_action)(int, siginfo_t *, void *))
 {
 	struct sigaction	sa;
 

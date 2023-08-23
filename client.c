@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 04:31:54 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 05:48:45 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int	main(int argc, char const *argv[])
 	{
 		exit_with_error(INVALID_PID);
 	}
-	init_sigaction(signal_action);
+	init_sig(signal_action);
 	send_message(g_signal_data.current_pid, argv[2]);
 	return (0);
 }

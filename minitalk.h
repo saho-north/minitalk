@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 04:31:42 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 05:48:52 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ typedef struct s_signal_data
 
 bool						is_arg_numeric(const char *str);
 void						exit_with_error(t_error_type error_type);
-void	init_sigaction(void (*signal_action)(int,
-											siginfo_t *,
-											void *));
+void						init_sig(void (*action)(int, siginfo_t *, void *));
 
 #endif
