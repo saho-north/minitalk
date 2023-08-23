@@ -6,21 +6,11 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 05:48:45 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 06:18:02 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
-
-/*
-- ACKは大体実装できたはずである
-- ACKを送る前に、strの長さを送る実装を後で行う
-- mallocの成否を受け取る実装が必要
-- 送信する文字列の長さが、intの範囲を超える場合の実装が必要
-- Unicode characters supportの実装が必要 <- やり方がわからないのでリサーチする
-- 1 second for displaying 100 characters is way too much! <- これは、sleepの時間を短くすることで解決できるはず
-- timeoutの時に、一定回数は再送を試みる実装が必要（serverのmalloc中には確認応答しないため）
-*/
 
 static volatile t_signal_data	g_signal_data;
 
@@ -54,7 +44,9 @@ static t_signal_acknowledgement	is_signal_acknowledged(void)
 	{
 		usleep(SLEEP_DURATION);
 		if (g_signal_data.signal_status != ACK_WAITING)
+		{
 			break ;
+		}
 		sleep_count++;
 		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
 		{
@@ -63,6 +55,20 @@ static t_signal_acknowledgement	is_signal_acknowledged(void)
 		}
 	}
 	return (g_signal_data.signal_status);
+}
+
+static void	send_bit(pid_t pid, char bit)
+{
+	if (bit)
+	{
+		if (kill(pid, SIGUSR2) < 0)
+			exit_with_error(KILL_FAIL);
+	}
+	else
+	{
+		if (kill(pid, SIGUSR1) < 0)
+			exit_with_error(KILL_FAIL);
+	}
 }
 
 static void	transmit_char(pid_t pid, char c)
@@ -75,16 +81,7 @@ static void	transmit_char(pid_t pid, char c)
 	while (bit_index-- > 0)
 	{
 		g_signal_data.signal_status = ACK_WAITING;
-		if ((c >> bit_index) & 1)
-		{
-			if (kill(pid, SIGUSR2) < 0)
-				exit_with_error(KILL_FAIL);
-		}
-		else
-		{
-			if (kill(pid, SIGUSR1) < 0)
-				exit_with_error(KILL_FAIL);
-		}
+		send_bit(pid, (c >> bit_index) & 1);
 		if (is_signal_acknowledged() != ACK_RECEIVED)
 		{
 			counter_for_retry++;
@@ -92,12 +89,13 @@ static void	transmit_char(pid_t pid, char c)
 				exit_with_error(TIMEOUT);
 			bit_index++;
 		}
+		else
+			counter_for_retry = 0;
 	}
 }
 
 static void	send_message(pid_t pid, const char *str)
 {
-	//ここでstrの長さを送る実装を後程行う
 	transmit_char(pid, 0x02);
 	while (*str)
 	{
