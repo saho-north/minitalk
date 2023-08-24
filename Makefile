@@ -67,4 +67,7 @@ test2: $(NAME)
 	sleep 1
 	./$(CLIENT) `cat .server_pid` `python -c "print('-0' * 10000)"`
 
-.PHONY: all clean fclean re test pre_test test0 test1 test2
+norm:
+	norminette ./*.c ./*.h
+
+.PHONY: all clean fclean re test pre_test test0 test1 test2 norm
