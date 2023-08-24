@@ -48,9 +48,7 @@ fclean: clean
 
 re: fclean all
 
-test: pre_test test0 test1 test2 fclean
-	kill `cat .server_pid`
-	kill -0 `cat .server_pid` 2>/dev/null && echo "Server still running" || echo "Server killed"
+test: pre_test test0 test1 test2 check_leaks kill_server
 
 pre_test: $(NAME)
 	./$(SERVER) & echo $$! > .server_pid
@@ -66,6 +64,14 @@ test1: $(NAME)
 test2: $(NAME)
 	sleep 1
 	./$(CLIENT) `cat .server_pid` `python -c "print('-0' * 10000)"`
+
+check_leaks: $(NAME)
+	sleep 1
+	leaks `cat .server_pid`
+
+kill_server:
+	kill `cat .server_pid`
+	kill -0 `cat .server_pid` 2>/dev/null && echo "Server still running" || echo "Server killed"
 
 norm:
 	norminette ./*.c ./*.h
