@@ -48,7 +48,7 @@ fclean: clean
 
 re: fclean all
 
-test: pre_test test0 test1 test2
+test: pre_test test0 test1 test2 fclean
 	kill `cat .server_pid`
 	kill -0 `cat .server_pid` 2>/dev/null && echo "Server still running" || echo "Server killed"
 
