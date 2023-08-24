@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 14:56:58 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 22:15:45 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,12 @@ typedef enum e_error_type
 	TIMEOUT,
 	ERROR_TYPE_COUNT
 }							t_error_type;
+
+typedef enum e_control_characters
+{
+	START_OF_TXT = 0x02,
+	END_OF_TXT = 0x03
+}							t_control_characters;
 
 typedef struct s_signal_data
 {

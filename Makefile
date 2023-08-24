@@ -15,7 +15,7 @@ HDR_DIR	 = ./
 HDR		 = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
 SRCS_COMMON = exit_with_error.c init_sigaction.c
-SRCS_CLIENT = $(CLIENT).c is_arg_numeric.c
+SRCS_CLIENT = $(CLIENT).c transmit_message.c
 SRCS_SERVER = $(SERVER).c handle_bit.c
 
 OBJS_COMMON = $(SRCS_COMMON:.c=.o)
@@ -65,6 +65,6 @@ test1: $(NAME)
 
 test2: $(NAME)
 	sleep 1
-	./$(CLIENT) `cat .server_pid` `python -c "print('a' * 10000)"`
+	./$(CLIENT) `cat .server_pid` `python -c "print('-0' * 10000)"`
 
 .PHONY: all clean fclean re test pre_test test0 test1 test2
