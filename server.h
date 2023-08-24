@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 06:39:25 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 07:34:12 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 14:49:59 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ typedef enum e_bit_signal
 	SIG_FOR_WAITING
 }								t_bit_signal;
 
-extern volatile t_signal_data	g_client_status;
+extern volatile t_signal_info	g_client_info;
 
 void							handle_bit(void);
 #endif

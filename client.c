@@ -6,32 +6,32 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 07:27:04 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/24 14:57:02 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-volatile t_signal_data			g_signal_data;
+volatile t_signal_info			g_signal_info;
 
 static void	signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
-	if (g_signal_data.signal_status != ACK_WAITING)
+	if (g_signal_info.signal_status != ACK_WAITING)
 	{
 		return ;
 	}
-	if (info->si_pid != g_signal_data.current_pid)
+	if (info->si_pid != g_signal_info.current_pid)
 	{
 		return ;
 	}
 	if (sig == SIGUSR1)
 	{
-		g_signal_data.signal_status = ACK_SERVER_BUSY;
+		g_signal_info.signal_status = ACK_SERVER_BUSY;
 	}
 	else if (sig == SIGUSR2)
 	{
-		g_signal_data.signal_status = ACK_RECEIVED;
+		g_signal_info.signal_status = ACK_RECEIVED;
 	}
 }
 
@@ -43,18 +43,18 @@ static t_signal_acknowledgement	is_signal_acknowledged(void)
 	while (1)
 	{
 		usleep(SLEEP_DURATION);
-		if (g_signal_data.signal_status != ACK_WAITING)
+		if (g_signal_info.signal_status != ACK_WAITING)
 		{
 			break ;
 		}
 		sleep_count++;
 		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
 		{
-			g_signal_data.signal_status = ACK_TIME_OUT;
+			g_signal_info.signal_status = ACK_TIME_OUT;
 			break ;
 		}
 	}
-	return (g_signal_data.signal_status);
+	return (g_signal_info.signal_status);
 }
 
 static void	send_bit(pid_t pid, char bit)
@@ -80,7 +80,7 @@ static void	transmit_char(pid_t pid, char c)
 	counter_for_retry = 0;
 	while (bit_index-- > 0)
 	{
-		g_signal_data.signal_status = ACK_WAITING;
+		g_signal_info.signal_status = ACK_WAITING;
 		send_bit(pid, (c >> bit_index) & 1);
 		if (is_signal_acknowledged() != ACK_RECEIVED)
 		{
@@ -108,22 +108,22 @@ static void	send_message(pid_t pid, const char *str)
 
 int	main(int argc, char const *argv[])
 {
-	g_signal_data.current_pid = 0;
-	g_signal_data.signal_status = ACK_WAITING;
+	g_signal_info.current_pid = 0;
+	g_signal_info.signal_status = ACK_WAITING;
 	if (argc != 3 || !is_arg_numeric(argv[1]))
 	{
 		exit_with_error(INVALID_ARGS);
 	}
-	g_signal_data.current_pid = ft_atoi(argv[1]);
-	if (g_signal_data.current_pid < 1)
+	g_signal_info.current_pid = ft_atoi(argv[1]);
+	if (g_signal_info.current_pid < 1)
 	{
 		exit_with_error(INVALID_PID);
 	}
-	if (kill(g_signal_data.current_pid, 0) < 0)
+	if (kill(g_signal_info.current_pid, 0) < 0)
 	{
 		exit_with_error(INVALID_PID);
 	}
 	init_sigaction(signal_action);
-	send_message(g_signal_data.current_pid, argv[2]);
+	send_message(g_signal_info.current_pid, argv[2]);
 	return (0);
 }
