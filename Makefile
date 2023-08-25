@@ -63,7 +63,7 @@ test1: $(NAME)
 
 test2: $(NAME)
 	sleep 1
-	./$(CLIENT) `cat .server_pid` `python -c "print('-0' * 10000)"`
+	./$(CLIENT) `cat .server_pid` `python -c "print('-|' * 10000)"`
 
 check_leaks: $(NAME)
 	sleep 1
@@ -75,5 +75,9 @@ kill_server:
 
 norm:
 	norminette ./*.c ./*.h
+
+dummy:
+	cc test.c -o test
+	./test
 
 .PHONY: all clean fclean re test pre_test test0 test1 test2 norm
