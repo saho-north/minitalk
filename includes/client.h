@@ -1,28 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.h                                           :+:      :+:    :+:   */
+/*   client.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/24 06:39:25 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 14:49:59 by sakitaha         ###   ########.fr       */
+/*   Created: 2023/08/24 06:28:54 by sakitaha          #+#    #+#             */
+/*   Updated: 2023/08/26 04:09:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_H
-# define SERVER_H
+#ifndef CLIENT_H
+# define CLIENT_H
 
 # include "minitalk.h"
 
-typedef enum e_bit_signal
+# define MAX_RETRIES 10
+# define TIMEOUT_LIMIT 1000000
+
+typedef enum e_signal_acknowledgement
 {
-	SIG_FOR_ZERO_BIT,
-	SIG_FOR_ONE_BIT,
-	SIG_FOR_WAITING
-}								t_bit_signal;
+	ACK_SERVER_FAIL,
+	ACK_RECEIVED,
+	ACK_TIME_OUT,
+	ACK_WAITING
+}								t_signal_acknowledgement;
 
 extern volatile t_signal_info	g_client_info;
 
-void							handle_bit(void);
+void							transmit_message(pid_t pid, const char *str);
+
 #endif

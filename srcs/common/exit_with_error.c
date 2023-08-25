@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 00:06:29 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/25 17:41:06 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/26 04:10:25 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,8 @@ void	exit_with_error(t_error_type error_type)
 	message[INVALID_CHAR] = "Error: Invalid char";
 	message[TIMEOUT] = "Error: Timeout";
 	if (error_type < ERROR_TYPE_COUNT)
-	{
 		ft_putendl_fd(message[error_type], 2);
-	}
 	else
-	{
 		ft_putendl_fd("Error: Unknown error", 2);
-	}
-	exit(1);
+	exit(EXIT_FAILURE);
 }
