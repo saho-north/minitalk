@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/24 22:55:18 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/25 18:16:06 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,6 @@ static t_signal_acknowledgement	check_server_ack(void)
 	return (g_client_info.signal_status);
 }
 
-static void	transmit_bit(pid_t pid, char bit)
-{
-	if (bit)
-	{
-		if (kill(pid, SIGUSR2) < 0)
-			exit_with_error(KILL_FAIL);
-	}
-	else
-	{
-		if (kill(pid, SIGUSR1) < 0)
-			exit_with_error(KILL_FAIL);
-	}
-}
-
 static bool	is_ack_received_with_retry(void)
 {
 	static size_t	retry_count;
@@ -56,7 +42,21 @@ static bool	is_ack_received_with_retry(void)
 	return (false);
 }
 
-static void	transmit_char(pid_t pid, char c)
+static void	transmit_bit(pid_t pid, char bit)
+{
+	if (bit)
+	{
+		if (kill(pid, SIGUSR2) < 0)
+			exit_with_error(KILL_FAIL);
+	}
+	else
+	{
+		if (kill(pid, SIGUSR1) < 0)
+			exit_with_error(KILL_FAIL);
+	}
+}
+
+static void	transmit_byte(pid_t pid, char c)
 {
 	size_t	bit_index;
 
@@ -72,11 +72,11 @@ static void	transmit_char(pid_t pid, char c)
 
 void	transmit_message(pid_t pid, const char *str)
 {
-	transmit_char(pid, START_OF_TXT);
+	transmit_byte(pid, START_OF_TXT);
 	while (*str)
 	{
-		transmit_char(pid, *str);
+		transmit_byte(pid, *str);
 		str++;
 	}
-	transmit_char(pid, END_OF_TXT);
+	transmit_byte(pid, END_OF_TXT);
 }
