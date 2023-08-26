@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 06:28:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/26 04:09:25 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/26 16:33:02 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define CLIENT_H
 
 # include "minitalk.h"
+# include <stdbool.h>
 
 # define MAX_RETRIES 10
 # define TIMEOUT_LIMIT 1000000

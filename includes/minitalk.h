@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/26 05:10:51 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/26 16:32:54 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include "libft.h"
 # include <signal.h>
-# include <stdbool.h>
 # include <stddef.h>
 # include <unistd.h>
 

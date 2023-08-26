@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/25 00:23:36 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/26 16:31:48 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	main(void)
 	init_sigaction(signal_action);
 	while (1)
 	{
-		usleep(SLEEP_DURATION);
+		pause();
 		handle_bit();
 	}
 	return (0);
