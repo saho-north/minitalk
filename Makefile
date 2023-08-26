@@ -39,6 +39,8 @@ $(LIBFT):
 
 all: $(NAME)
 
+bonus: all
+
 %.o: %.c $(HDR) $(LIBFT_HDR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
