@@ -6,40 +6,25 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/25 18:16:06 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/26 23:48:29 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-static t_signal_acknowledgement	check_server_ack(void)
+static t_signal_acknowledgement	is_ack_received(void)
 {
 	size_t	sleep_count;
 
 	sleep_count = 0;
-	while (g_client_info.signal_status == ACK_WAITING)
+	while (g_server_info.signal_status == ACK_WAITING)
 	{
 		usleep(SLEEP_DURATION);
 		sleep_count++;
 		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
-			g_client_info.signal_status = ACK_TIME_OUT;
+			break ;
 	}
-	return (g_client_info.signal_status);
-}
-
-static bool	is_ack_received_with_retry(void)
-{
-	static size_t	retry_count;
-
-	if (check_server_ack() == ACK_RECEIVED)
-	{
-		retry_count = 0;
-		return (true);
-	}
-	retry_count++;
-	if (retry_count > MAX_RETRIES)
-		exit_with_error(TIMEOUT);
-	return (false);
+	return (g_server_info.signal_status);
 }
 
 static void	transmit_bit(pid_t pid, char bit)
@@ -58,15 +43,26 @@ static void	transmit_bit(pid_t pid, char bit)
 
 static void	transmit_byte(pid_t pid, char c)
 {
-	size_t	bit_index;
+	int		bit_index;
+	size_t	retry_count;
 
-	bit_index = 8;
-	while (bit_index-- > 0)
+	bit_index = 7;
+	retry_count = 0;
+	while (bit_index >= 0)
 	{
-		g_client_info.signal_status = ACK_WAITING;
+		g_server_info.signal_status = ACK_WAITING;
 		transmit_bit(pid, (c >> bit_index) & 1);
-		if (!is_ack_received_with_retry())
-			bit_index++;
+		if (is_ack_received() == ACK_RECEIVED)
+		{
+			bit_index--;
+			retry_count = 0;
+		}
+		else
+		{
+			retry_count++;
+			if (retry_count > MAX_RETRIES)
+				exit_with_error(TIMEOUT);
+		}
 	}
 }
 
