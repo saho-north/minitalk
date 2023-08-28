@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/26 23:05:13 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/28 17:44:03 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ typedef enum e_control_characters
 	END_OF_TXT = 0x03
 }							t_control_characters;
 
+//to be deleted later
 typedef struct s_signal_data
 {
 	volatile sig_atomic_t	current_pid;

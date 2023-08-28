@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 06:39:25 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/26 04:03:34 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/28 19:48:56 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,19 @@
 
 # define INITIAL_BUF_SIZE 1024
 
-typedef enum e_bit_signal
+typedef enum e_signal_status
 {
+	SIG_FOR_WAITING,
 	SIG_FOR_ZERO_BIT,
 	SIG_FOR_ONE_BIT,
-	SIG_FOR_WAITING
-}								t_bit_signal;
+	SIG_READY_FOR_NEW_CLIENT,
+	SIG_COMMUNICATION_ERROR_SERVER,
+	SIG_COMMUNICATION_ERROR_CLIENT,
+	SIG_TIMEOUT,
+	SIG_KILL_ERROR
+}								t_signal_status;
 
-extern volatile t_signal_info	g_client_info;
+extern volatile sig_atomic_t	g_server_signal_status;
 
 void							handle_bit(void);
 #endif
