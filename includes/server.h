@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 06:39:25 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/28 22:56:06 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/29 05:30:05 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,6 @@ typedef enum e_signal_status
 	SIG_KILL_ERROR
 }								t_signal_status;
 
-extern volatile sig_atomic_t	g_server_signal_status;
+extern volatile t_signal_info	g_server_info;
 
 #endif

@@ -6,14 +6,13 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/28 22:59:08 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/29 05:32:48 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-volatile sig_atomic_t	g_client_pid;
-volatile sig_atomic_t	g_signal_status;
+volatile t_signal_info	g_server_info;
 
 static char	*process_start_of_txt(size_t *buf_size, size_t *buf_index)
 {
@@ -34,7 +33,7 @@ static void	process_end_of_txt(char *buf, size_t buf_index)
 	write(1, "\n", 1);
 	free(buf);
 	buf = NULL;
-	g_client_pid = 0;
+	g_server_info.current_pid = 0;
 }
 
 static void	confirm_char(char current_char)
@@ -68,7 +67,7 @@ static void	confirm_char(char current_char)
 
 static void	process_bit(char *current_char, size_t *bits_count)
 {
-	if (g_signal_status == SIG_FOR_ONE_BIT)
+	if (g_server_info.signal_status == SIG_FOR_ONE_BIT)
 	{
 		*current_char |= 1 << (7 - *bits_count);
 	}
@@ -81,14 +80,14 @@ static void	handle_bit(void)
 	static size_t	bits_count;
 	pid_t			client_pid;
 
-	client_pid = g_client_pid;
+	client_pid = g_server_info.current_pid;
 	if (client_pid == 0)
 	{
 		current_char = 0;
 		bits_count = 0;
 		return ;
 	}
-	if (g_signal_status == SIG_FOR_WAITING)
+	if (g_server_info.signal_status == SIG_FOR_WAITING)
 		return ;
 	process_bit(&current_char, &bits_count);
 	if (bits_count == 8)
@@ -97,7 +96,7 @@ static void	handle_bit(void)
 		current_char = 0;
 		bits_count = 0;
 	}
-	g_signal_status = SIG_FOR_WAITING;
+	g_server_info.signal_status = SIG_FOR_WAITING;
 	if (kill(client_pid, SIGUSR2) < 0)
 		exit_with_error(KILL_FAIL);
 }
@@ -105,22 +104,22 @@ static void	handle_bit(void)
 static void	handle_client_signal(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
-	if (g_signal_status != SIG_FOR_WAITING)
+	if (g_server_info.signal_status != SIG_FOR_WAITING)
 		return ;
-	if (g_client_pid == 0)
-		g_client_pid = info->si_pid;
-	else if (info->si_pid != g_client_pid)
+	if (g_server_info.current_pid == 0)
+		g_server_info.current_pid = info->si_pid;
+	else if (info->si_pid != g_server_info.current_pid)
 		return ;
 	if (sig == SIGUSR1)
-		g_signal_status = SIG_FOR_ZERO_BIT;
+		g_server_info.signal_status = SIG_FOR_ZERO_BIT;
 	else if (sig == SIGUSR2)
-		g_signal_status = SIG_FOR_ONE_BIT;
+		g_server_info.signal_status = SIG_FOR_ONE_BIT;
 }
 
 static void	init_server(void)
 {
-	g_client_pid = 0;
-	g_signal_status = SIG_FOR_WAITING;
+	g_server_info.current_pid = 0;
+	g_server_info.signal_status = SIG_FOR_WAITING;
 	ft_putstr_fd("Server PID: ", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putchar_fd('\n', 1);
