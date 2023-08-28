@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/28 22:57:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/28 22:59:08 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,6 @@ static void	handle_bit(void)
 
 static void	handle_client_signal(int sig, siginfo_t *info, void *ucontext)
 {
-	static volatile sig_atomic_t	client_pid;
-
 	(void)ucontext;
 	if (g_signal_status != SIG_FOR_WAITING)
 		return ;
