@@ -6,13 +6,37 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/29 05:32:48 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/08/29 17:46:54 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
 volatile t_signal_info	g_server_info;
+
+static void	signal_action(int sig, siginfo_t *info, void *ucontext)
+{
+	(void)ucontext;
+	if (g_server_info.current_pid == 0)
+		g_server_info.current_pid = info->si_pid;
+	if (g_server_info.signal_status != SIG_FOR_WAITING)
+		return ;
+	if (info->si_pid != g_server_info.current_pid)
+		return ;
+	if (sig == SIGUSR1)
+		g_server_info.signal_status = SIG_FOR_ZERO_BIT;
+	else if (sig == SIGUSR2)
+		g_server_info.signal_status = SIG_FOR_ONE_BIT;
+}
+
+static void	init_server(void)
+{
+	g_server_info.current_pid = 0;
+	g_server_info.signal_status = SIG_FOR_WAITING;
+	ft_putstr_fd("Server PID: ", 1);
+	ft_putnbr_fd(getpid(), 1);
+	ft_putchar_fd('\n', 1);
+}
 
 static char	*process_start_of_txt(size_t *buf_size, size_t *buf_index)
 {
@@ -36,7 +60,7 @@ static void	process_end_of_txt(char *buf, size_t buf_index)
 	g_server_info.current_pid = 0;
 }
 
-static void	confirm_char(char current_char)
+static char	*confirm_char(char current_char)
 {
 	static char		*buf;
 	static size_t	buf_size;
@@ -63,6 +87,7 @@ static void	confirm_char(char current_char)
 		buf[buf_index] = current_char;
 		buf_index++;
 	}
+	return (buf);
 }
 
 static void	process_bit(char *current_char, size_t *bits_count)
@@ -74,7 +99,7 @@ static void	process_bit(char *current_char, size_t *bits_count)
 	(*bits_count)++;
 }
 
-static void	handle_bit(void)
+static char	*handle_bit(char *buf)
 {
 	static char		current_char;
 	static size_t	bits_count;
@@ -85,50 +110,32 @@ static void	handle_bit(void)
 	{
 		current_char = 0;
 		bits_count = 0;
-		return ;
+		return (buf);
 	}
-	if (g_server_info.signal_status == SIG_FOR_WAITING)
-		return ;
-	process_bit(&current_char, &bits_count);
-	if (bits_count == 8)
+	if (g_server_info.signal_status == SIG_FOR_ZERO_BIT
+		|| g_server_info.signal_status == SIG_FOR_ONE_BIT)
 	{
-		confirm_char(current_char);
-		current_char = 0;
-		bits_count = 0;
+		process_bit(&current_char, &bits_count);
+		if (bits_count == 8)
+		{
+			buf = confirm_char(current_char);
+			current_char = 0;
+			bits_count = 0;
+		}
+		g_server_info.signal_status = SIG_FOR_WAITING;
+		if (kill(client_pid, SIGUSR2) < 0)
+			exit_with_error(KILL_FAIL);
 	}
-	g_server_info.signal_status = SIG_FOR_WAITING;
-	if (kill(client_pid, SIGUSR2) < 0)
-		exit_with_error(KILL_FAIL);
-}
-
-static void	handle_client_signal(int sig, siginfo_t *info, void *ucontext)
-{
-	(void)ucontext;
-	if (g_server_info.signal_status != SIG_FOR_WAITING)
-		return ;
-	if (g_server_info.current_pid == 0)
-		g_server_info.current_pid = info->si_pid;
-	else if (info->si_pid != g_server_info.current_pid)
-		return ;
-	if (sig == SIGUSR1)
-		g_server_info.signal_status = SIG_FOR_ZERO_BIT;
-	else if (sig == SIGUSR2)
-		g_server_info.signal_status = SIG_FOR_ONE_BIT;
-}
-
-static void	init_server(void)
-{
-	g_server_info.current_pid = 0;
-	g_server_info.signal_status = SIG_FOR_WAITING;
-	ft_putstr_fd("Server PID: ", 1);
-	ft_putnbr_fd(getpid(), 1);
-	ft_putchar_fd('\n', 1);
+	return (buf);
 }
 
 int	main(void)
 {
+	char	*buf;
+
 	init_server();
-	init_sigaction(handle_client_signal);
+	init_sigaction(signal_action);
+	buf = NULL;
 	while (1)
 	{
 		pause();
@@ -137,7 +144,13 @@ int	main(void)
 		// Timeout occurs when g_server_signal_status is SIG_FOR_WAITING
 		// for a certain amount of time (no signal from the client).
 		// Handle the timeout condition here.
-		handle_bit();
+		buf = handle_bit(buf);
+		if (g_server_info.signal_status == SIG_COMMUNICATION_ERROR_SERVER)
+		{
+			free(buf);
+			buf = NULL;
+			exit_with_error(0);
+		}
 	}
 	return (0);
 }
