@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/24 06:39:25 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/29 05:30:05 by sakitaha         ###   ########.fr       */
+/*   Created: 2023/09/01 01:30:53 by sakitaha          #+#    #+#             */
+/*   Updated: 2023/09/01 05:44:54 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,19 +16,37 @@
 # include "minitalk.h"
 
 # define INITIAL_BUF_SIZE 1024
+# define CALL_LIMIT 1000
 
 typedef enum e_signal_status
 {
-	SIG_FOR_WAITING,
-	SIG_FOR_ZERO_BIT,
-	SIG_FOR_ONE_BIT,
-	SIG_READY_FOR_NEW_CLIENT,
-	SIG_COMMUNICATION_ERROR_SERVER,
-	SIG_COMMUNICATION_ERROR_CLIENT,
-	SIG_TIMEOUT,
-	SIG_KILL_ERROR
+	ZERO_BIT,
+	ONE_BIT,
+	WAITING_FOR_SIGNAL
 }								t_signal_status;
 
+typedef struct s_msg_state
+{
+	char						*buf;
+	size_t						buf_index;
+	size_t						buf_size;
+	char						current_char;
+	size_t						bits_count;
+	pid_t						sender_pid;
+	size_t						call_count;
+	bool						is_first_signal;
+	bool						is_last_signal;
+}								t_msg_state;
+
 extern volatile t_signal_info	g_server_info;
+
+void							reset_server_info(void);
+void							reset_msg_state(t_msg_state *msg_state);
+void							receive_message(t_msg_state *msg_state);
+void							put_char_into_buf(t_msg_state *msg_state);
+bool							has_no_current_client(void);
+bool							is_waiting_signal(void);
+void							check_call_limit(t_msg_state *msg_state);
+void							free_and_exit(t_msg_state *m, t_error_type e);
 
 #endif

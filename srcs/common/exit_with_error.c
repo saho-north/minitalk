@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 00:06:29 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/26 23:05:31 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/09/01 01:00:35 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	exit_with_error(t_error_type error_type)
 	message[KILL_FAIL] = "Error: Failed to send signal";
 	message[INVALID_ARGS] = "Usage: ./client [server PID] [message]";
 	message[INVALID_PID] = "Error: Invalid PID";
-	message[INVALID_STRING] = "Error: Invalid string";
+	message[INVALID_TXT] = "Error: Invalid string";
 	message[INVALID_CHAR] = "Error: Invalid char";
 	message[TIMEOUT] = "Error: Timeout";
 	if (error_type < ERROR_TYPE_COUNT)

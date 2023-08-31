@@ -16,7 +16,7 @@ HDR             = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
 SRCS_COMMON     = exit_with_error.c init_sigaction.c
 SRCS_CLIENT     = $(CLIENT).c transmit_message.c
-SRCS_SERVER     = $(SERVER).c
+SRCS_SERVER     = $(SERVER).c receive_message.c put_char_into_buf.c server_utils.c
 
 SRCS_COMMON_DIR = ./srcs/common/
 SRCS_CLIENT_DIR = ./srcs/client/
@@ -54,23 +54,61 @@ fclean: clean
 
 re: fclean all
 
-test: pre_test test_cases check_leaks kill_server fclean
+test: pre_test test_cases check_leaks kill_server
+	rm -f .server_pid
+
+small: pre_test test_small check_leaks kill_server
 	rm -f .server_pid
 
 pre_test: $(NAME)
 	./$(SERVER) & echo $$! > .server_pid
 
 test_cases:
+	@echo "-----------------------------------------------------------"
 	./$(CLIENT) `cat .server_pid` "Hello World"
+	@echo ""
+	@echo ""
 	./$(CLIENT) `cat .server_pid` "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	@echo ""
+	@echo ""
 	./$(CLIENT) `cat .server_pid` "👨‍👩‍👧‍👦異体字！🐱🐈‍⬛猫の絵文字🐾42tokyo🗼"
+	@echo ""
+	@echo ""
 	./$(CLIENT) `cat .server_pid` ""
+	@echo ""
+	@echo ""
 	./$(CLIENT) `cat .server_pid` "a"
+	@echo ""
+	@echo ""
 	./$(CLIENT) `cat .server_pid` "こんにちは ɧɛɫˡɵːŴởȑľð Χαῖρε добри́день سلام שלום Բարեւ"
-	./$(CLIENT) `cat .server_pid` `python -c "print('🌟' * 10000)"`
+	@echo ""
+	@echo ""
+	./$(CLIENT) `cat .server_pid` `python -c "print('.' * 10000)"`
+	@echo ""
+	@echo ""
+	@echo "-----------------------------------------------------------"
+
+test_small:
+	@echo "-----------------------------------------------------------"
+	./$(CLIENT) `cat .server_pid` "a"
+	@echo ""
+	@echo ""
+	./$(CLIENT) `cat .server_pid` "Hello World"
+	@echo ""
+	@echo ""
+	./$(CLIENT) `cat .server_pid` "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+	@echo ""
+	@echo ""
+	./$(CLIENT) `cat .server_pid` `python -c "print('-' * 100)"`
+	@echo ""
+	@echo ""
+	./$(CLIENT) `cat .server_pid` `python -c "print('v' * 2000)"`
+	@echo ""
+	@echo ""
+	@echo "-----------------------------------------------------------"
 
 check_leaks:
-	sleep 1
+	sleep 5
 	leaks `cat .server_pid`
 
 kill_server:

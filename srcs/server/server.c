@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/29 17:46:54 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/09/01 05:42:34 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,143 +14,74 @@
 
 volatile t_signal_info	g_server_info;
 
-static void	signal_action(int sig, siginfo_t *info, void *ucontext)
+void	reset_server_info(void)
+{
+	g_server_info.current_pid = 0;
+	g_server_info.signal_status = WAITING_FOR_SIGNAL;
+}
+
+static void	server_signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
 	if (g_server_info.current_pid == 0)
 		g_server_info.current_pid = info->si_pid;
-	if (g_server_info.signal_status != SIG_FOR_WAITING)
+	else if (g_server_info.current_pid != info->si_pid)
 		return ;
-	if (info->si_pid != g_server_info.current_pid)
+	if (g_server_info.signal_status != WAITING_FOR_SIGNAL)
 		return ;
 	if (sig == SIGUSR1)
-		g_server_info.signal_status = SIG_FOR_ZERO_BIT;
+		g_server_info.signal_status = ZERO_BIT;
 	else if (sig == SIGUSR2)
-		g_server_info.signal_status = SIG_FOR_ONE_BIT;
+		g_server_info.signal_status = ONE_BIT;
 }
 
-static void	init_server(void)
+void	reset_msg_state(t_msg_state *msg_state)
 {
-	g_server_info.current_pid = 0;
-	g_server_info.signal_status = SIG_FOR_WAITING;
-	ft_putstr_fd("Server PID: ", 1);
-	ft_putnbr_fd(getpid(), 1);
-	ft_putchar_fd('\n', 1);
-}
-
-static char	*process_start_of_txt(size_t *buf_size, size_t *buf_index)
-{
-	char	*buf;
-
-	buf = (char *)malloc(sizeof(char) * INITIAL_BUF_SIZE + 1);
-	if (!buf)
+	free(msg_state->buf);
+	msg_state->buf = NULL;
+	msg_state->buf = (char *)malloc(sizeof(char) * INITIAL_BUF_SIZE);
+	if (!msg_state->buf)
+	{
+		free(msg_state);
 		exit_with_error(MALLOC_FAIL);
-	*buf_size = INITIAL_BUF_SIZE;
-	*buf_index = 0;
-	return (buf);
+	}
+	msg_state->buf_index = 0;
+	msg_state->buf_size = INITIAL_BUF_SIZE;
+	msg_state->current_char = 0;
+	msg_state->bits_count = 0;
+	msg_state->sender_pid = 0;
+	msg_state->call_count = 0;
+	msg_state->is_first_signal = true;
+	msg_state->is_last_signal = false;
 }
 
-static void	process_end_of_txt(char *buf, size_t buf_index)
+static t_msg_state	*init_msg_state(void)
 {
-	buf[buf_index] = '\0';
-	write(1, buf, buf_index);
-	write(1, "\n", 1);
-	free(buf);
-	buf = NULL;
-	g_server_info.current_pid = 0;
-}
+	t_msg_state	*new_state;
 
-static char	*confirm_char(char current_char)
-{
-	static char		*buf;
-	static size_t	buf_size;
-	static size_t	buf_index;
-	char			*old_buf;
-
-	if (current_char == START_OF_TXT)
-		buf = process_start_of_txt(&buf_size, &buf_index);
-	else if (current_char == END_OF_TXT)
-		process_end_of_txt(buf, buf_index);
-	else
-	{
-		if (buf_index >= buf_size)
-		{
-			old_buf = buf;
-			buf = (char *)ft_realloc(buf, buf_size, buf_size * 2 + 1);
-			if (!buf)
-			{
-				free(old_buf);
-				exit_with_error(MALLOC_FAIL);
-			}
-			buf_size *= 2;
-		}
-		buf[buf_index] = current_char;
-		buf_index++;
-	}
-	return (buf);
-}
-
-static void	process_bit(char *current_char, size_t *bits_count)
-{
-	if (g_server_info.signal_status == SIG_FOR_ONE_BIT)
-	{
-		*current_char |= 1 << (7 - *bits_count);
-	}
-	(*bits_count)++;
-}
-
-static char	*handle_bit(char *buf)
-{
-	static char		current_char;
-	static size_t	bits_count;
-	pid_t			client_pid;
-
-	client_pid = g_server_info.current_pid;
-	if (client_pid == 0)
-	{
-		current_char = 0;
-		bits_count = 0;
-		return (buf);
-	}
-	if (g_server_info.signal_status == SIG_FOR_ZERO_BIT
-		|| g_server_info.signal_status == SIG_FOR_ONE_BIT)
-	{
-		process_bit(&current_char, &bits_count);
-		if (bits_count == 8)
-		{
-			buf = confirm_char(current_char);
-			current_char = 0;
-			bits_count = 0;
-		}
-		g_server_info.signal_status = SIG_FOR_WAITING;
-		if (kill(client_pid, SIGUSR2) < 0)
-			exit_with_error(KILL_FAIL);
-	}
-	return (buf);
+	new_state = (t_msg_state *)malloc(sizeof(t_msg_state));
+	if (!new_state)
+		exit_with_error(MALLOC_FAIL);
+	new_state->buf = NULL;
+	reset_msg_state(new_state);
+	return (new_state);
 }
 
 int	main(void)
 {
-	char	*buf;
+	t_msg_state	*msg_state;
 
-	init_server();
-	init_sigaction(signal_action);
-	buf = NULL;
+	msg_state = init_msg_state();
+	reset_server_info();
+	ft_putstr_fd("Server PID: ", 1);
+	ft_putnbr_fd(getpid(), 1);
+	ft_putchar_fd('\n', 1);
+	init_sigaction(server_signal_action);
 	while (1)
 	{
 		pause();
-		// TODO: add error handling for kill error case
-		// TODO: Implement timeout handling
-		// Timeout occurs when g_server_signal_status is SIG_FOR_WAITING
-		// for a certain amount of time (no signal from the client).
-		// Handle the timeout condition here.
-		buf = handle_bit(buf);
-		if (g_server_info.signal_status == SIG_COMMUNICATION_ERROR_SERVER)
-		{
-			free(buf);
-			buf = NULL;
-			exit_with_error(0);
-		}
+		receive_message(msg_state);
+		check_call_limit(msg_state);
 	}
 	return (0);
 }

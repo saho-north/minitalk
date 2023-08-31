@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/26 23:27:51 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/09/01 05:39:28 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 volatile t_signal_info	g_server_info;
 
-static void	signal_action(int sig, siginfo_t *info, void *ucontext)
+static void	client_signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
 	if (info->si_pid != g_server_info.current_pid)
@@ -54,7 +54,7 @@ static void	init_client(int argc, char const *argv[])
 int	main(int argc, char const *argv[])
 {
 	init_client(argc, argv);
-	init_sigaction(signal_action);
+	init_sigaction(client_signal_action);
 	transmit_message(g_server_info.current_pid, argv[2]);
 	return (0);
 }

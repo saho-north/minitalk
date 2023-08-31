@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/28 17:44:03 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/09/01 03:16:17 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ typedef enum e_error_type
 	KILL_FAIL,
 	INVALID_ARGS,
 	INVALID_PID,
-	INVALID_STRING,
+	INVALID_TXT,
 	INVALID_CHAR,
 	TIMEOUT,
 	ERROR_TYPE_COUNT
@@ -41,8 +41,7 @@ typedef enum e_control_characters
 	END_OF_TXT = 0x03
 }							t_control_characters;
 
-//to be deleted later
-typedef struct s_signal_data
+typedef struct s_signal_info
 {
 	volatile sig_atomic_t	current_pid;
 	volatile sig_atomic_t	signal_status;
