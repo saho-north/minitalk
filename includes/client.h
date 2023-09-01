@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 06:28:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/09/01 05:12:42 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/09/01 15:38:40 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ typedef enum e_signal_acknowledgement
 	ACK_WAITING
 }								t_signal_acknowledgement;
 
-extern volatile t_signal_info	g_server_info;
+extern volatile t_signal_info	g_client_info;
 
 void							transmit_message(pid_t pid, const char *str);
 

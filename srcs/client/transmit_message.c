@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/08/26 23:48:29 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/09/01 15:38:29 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@ static t_signal_acknowledgement	is_ack_received(void)
 	size_t	sleep_count;
 
 	sleep_count = 0;
-	while (g_server_info.signal_status == ACK_WAITING)
+	while (g_client_info.signal_status == ACK_WAITING)
 	{
 		usleep(SLEEP_DURATION);
 		sleep_count++;
 		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
 			break ;
 	}
-	return (g_server_info.signal_status);
+	return (g_client_info.signal_status);
 }
 
 static void	transmit_bit(pid_t pid, char bit)
@@ -50,7 +50,7 @@ static void	transmit_byte(pid_t pid, char c)
 	retry_count = 0;
 	while (bit_index >= 0)
 	{
-		g_server_info.signal_status = ACK_WAITING;
+		g_client_info.signal_status = ACK_WAITING;
 		transmit_bit(pid, (c >> bit_index) & 1);
 		if (is_ack_received() == ACK_RECEIVED)
 		{

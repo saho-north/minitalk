@@ -57,9 +57,6 @@ re: fclean all
 test: pre_test test_cases check_leaks kill_server
 	rm -f .server_pid
 
-small: pre_test test_small check_leaks kill_server
-	rm -f .server_pid
-
 pre_test: $(NAME)
 	./$(SERVER) & echo $$! > .server_pid
 
@@ -88,27 +85,8 @@ test_cases:
 	@echo ""
 	@echo "-----------------------------------------------------------"
 
-test_small:
-	@echo "-----------------------------------------------------------"
-	./$(CLIENT) `cat .server_pid` "a"
-	@echo ""
-	@echo ""
-	./$(CLIENT) `cat .server_pid` "Hello World"
-	@echo ""
-	@echo ""
-	./$(CLIENT) `cat .server_pid` "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-	@echo ""
-	@echo ""
-	./$(CLIENT) `cat .server_pid` `python -c "print('-' * 100)"`
-	@echo ""
-	@echo ""
-	./$(CLIENT) `cat .server_pid` `python -c "print('v' * 2000)"`
-	@echo ""
-	@echo ""
-	@echo "-----------------------------------------------------------"
-
 check_leaks:
-	sleep 5
+	sleep 1
 	leaks `cat .server_pid`
 
 kill_server:
