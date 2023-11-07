@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/09/01 03:16:17 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/07 14:06:28 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef enum e_error_type
 	INVALID_TXT,
 	INVALID_CHAR,
 	TIMEOUT,
+	SERVER_FAIL,
 	ERROR_TYPE_COUNT
 }							t_error_type;
 

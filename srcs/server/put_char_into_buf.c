@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/01 01:50:51 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/09/01 05:19:38 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/07 14:26:35 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,10 @@ static void	realloc_msg_state(t_msg_state *msg_state)
 	new_buf_size = msg_state->buf_size * 2 + 1;
 	tmp = (char *)ft_realloc(msg_state->buf, msg_state->buf_size, new_buf_size);
 	if (!tmp)
+	{
+		notify_failure(msg_state);
 		free_and_exit(msg_state, MALLOC_FAIL);
+	}
 	msg_state->buf = tmp;
 	msg_state->buf_size = new_buf_size;
 }
@@ -28,7 +31,10 @@ static void	realloc_msg_state(t_msg_state *msg_state)
 static void	append_char(t_msg_state *msg_state)
 {
 	if (msg_state->is_first_signal || msg_state->is_last_signal)
+	{
+		notify_failure(msg_state);
 		free_and_exit(msg_state, INVALID_TXT);
+	}
 	if (msg_state->buf_index + 2 >= msg_state->buf_size)
 		realloc_msg_state(msg_state);
 	msg_state->buf[msg_state->buf_index] = msg_state->current_char;
@@ -45,7 +51,10 @@ static void	process_end_of_txt(t_msg_state *msg_state)
 static void	process_start_of_txt(t_msg_state *msg_state)
 {
 	if (!msg_state->is_first_signal)
+	{
+		notify_failure(msg_state);
 		free_and_exit(msg_state, INVALID_TXT);
+	}
 	msg_state->is_first_signal = false;
 }
 
