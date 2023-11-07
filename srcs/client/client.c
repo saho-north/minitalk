@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 18:37:47 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/07 23:59:40 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ static void	client_signal_action(int sig, siginfo_t *info, void *ucontext)
 
 static bool	is_arg_numeric(const char *str)
 {
+	if (*str == '\0')
+		return (false);
 	while (*str)
 	{
 		if (!ft_isdigit(*str))
@@ -38,22 +40,29 @@ static bool	is_arg_numeric(const char *str)
 	return (true);
 }
 
-static void	init_client(int argc, char const *argv[])
+static void	is_valid_pid(const char *str)
 {
-	g_client_info.current_pid = 0;
-	g_client_info.signal_status = ACK_WAITING;
-	if (argc != 3 || !is_arg_numeric(argv[1]))
-		exit_with_error(INVALID_ARGS);
-	g_client_info.current_pid = ft_atoi(argv[1]);
+	if (!is_arg_numeric(str))
+		exit_with_error(INVALID_PID);
+	g_client_info.current_pid = ft_atoi(str);
 	if (g_client_info.current_pid < 1)
 		exit_with_error(INVALID_PID);
 	if (kill(g_client_info.current_pid, 0) < 0)
 		exit_with_error(INVALID_PID);
 }
 
+static void	init_client(void)
+{
+	g_client_info.current_pid = 0;
+	g_client_info.signal_status = ACK_WAITING;
+}
+
 int	main(int argc, char const *argv[])
 {
-	init_client(argc, argv);
+	if (argc != 3)
+		exit_with_error(INVALID_ARGS);
+	init_client();
+	is_valid_pid(argv[1]);
 	init_sigaction(client_signal_action);
 	transmit_message(g_client_info.current_pid, argv[2]);
 	return (0);
