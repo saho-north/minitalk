@@ -91,6 +91,6 @@ check_leaks:
 
 kill_server:
 	kill `cat .server_pid`
-	kill -0 `cat .server_pid`  && echo "Server still running" || echo "Server killed"
+	kill -0 `cat .server_pid` && echo "Server still running" || echo "Server killed"
 
 .PHONY: all clean fclean re test pre_test test_cases check_leaks kill_server
