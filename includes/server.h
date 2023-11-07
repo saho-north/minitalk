@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/01 01:30:53 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/09/01 05:44:54 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/07 14:24:07 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,5 +48,6 @@ bool							has_no_current_client(void);
 bool							is_waiting_signal(void);
 void							check_call_limit(t_msg_state *msg_state);
 void							free_and_exit(t_msg_state *m, t_error_type e);
+void							notify_failure(t_msg_state *msg_state);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 00:06:29 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/09/01 01:00:35 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/07 18:37:51 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	exit_with_error(t_error_type error_type)
 	message[INVALID_PID] = "Error: Invalid PID";
 	message[INVALID_TXT] = "Error: Invalid string";
 	message[INVALID_CHAR] = "Error: Invalid char";
+	message[SERVER_FAIL] = "Error: Server failed to receive message";
 	message[TIMEOUT] = "Error: Timeout";
 	if (error_type < ERROR_TYPE_COUNT)
 		ft_putendl_fd(message[error_type], 2);

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/09/01 15:38:29 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/07 18:37:49 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ static void	transmit_byte(pid_t pid, char c)
 			bit_index--;
 			retry_count = 0;
 		}
+		else if (is_ack_received() == ACK_SERVER_FAIL)
+			exit_with_error(SERVER_FAIL);
 		else
 		{
 			retry_count++;
