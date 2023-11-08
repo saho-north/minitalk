@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 06:28:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 18:37:38 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 13:53:05 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "minitalk.h"
 # include <stdbool.h>
 
-# define MAX_RETRIES 10
+# define MAX_ATTEMPTS 10
 # define TIMEOUT_LIMIT 1000000
 
 typedef enum e_signal_acknowledgement

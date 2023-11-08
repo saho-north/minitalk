@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 18:37:49 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 13:53:53 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,38 +43,36 @@ static void	transmit_bit(pid_t pid, char bit)
 
 static void	transmit_byte(pid_t pid, char c)
 {
-	int		bit_index;
-	size_t	retry_count;
+	int							bit_index;
+	size_t						attempt_count;
+	t_signal_acknowledgement	ack_status;
 
 	bit_index = 7;
-	retry_count = 0;
+	attempt_count = 0;
 	while (bit_index >= 0)
 	{
 		g_client_info.signal_status = ACK_WAITING;
 		transmit_bit(pid, (c >> bit_index) & 1);
-		if (is_ack_received() == ACK_RECEIVED)
+		attempt_count++;
+		ack_status = is_ack_received();
+		if (ack_status == ACK_RECEIVED)
 		{
 			bit_index--;
-			retry_count = 0;
+			attempt_count = 0;
 		}
-		else if (is_ack_received() == ACK_SERVER_FAIL)
+		else if (ack_status == ACK_SERVER_FAIL)
 			exit_with_error(SERVER_FAIL);
-		else
-		{
-			retry_count++;
-			if (retry_count > MAX_RETRIES)
-				exit_with_error(TIMEOUT);
-		}
+		else if (attempt_count > MAX_ATTEMPTS)
+			exit_with_error(TIMEOUT);
 	}
 }
 
 void	transmit_message(pid_t pid, const char *str)
 {
-	transmit_byte(pid, START_OF_TXT);
 	while (*str)
 	{
 		transmit_byte(pid, *str);
 		str++;
 	}
-	transmit_byte(pid, END_OF_TXT);
+	transmit_byte(pid, '\0');
 }
