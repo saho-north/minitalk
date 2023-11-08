@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 18:37:44 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 10:21:17 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,6 @@
 
 typedef enum e_error_type
 {
-	SIGEMPTYSET_FAIL,
-	SIGADDSET_FAIL,
-	SIGACTION_FAIL,
 	MALLOC_FAIL,
 	KILL_FAIL,
 	INVALID_ARGS,

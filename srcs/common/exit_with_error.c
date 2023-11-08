@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/20 00:06:29 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 18:37:51 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 10:22:05 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,6 @@ void	exit_with_error(t_error_type error_type)
 {
 	char	*message[ERROR_TYPE_COUNT];
 
-	message[SIGEMPTYSET_FAIL] = "Error: Failed to initialize signal set";
-	message[SIGADDSET_FAIL] = "Error: Failed to add signal to signal set";
-	message[SIGACTION_FAIL] = "Error: Failed to set signal handler";
 	message[MALLOC_FAIL] = "Error: Failed to allocate memory";
 	message[KILL_FAIL] = "Error: Failed to send signal";
 	message[INVALID_ARGS] = "Usage: ./client [server PID] [message]";

@@ -6,11 +6,23 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/23 01:27:45 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/06 17:12:26 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 11:09:23 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+/*
+    `sigemptyset` initializes the signal set `sa_mask`,
+	excluding all signals and creating an empty set.
+
+    `sigaddset` adds a specific signal (`SIGUSR2` or `SIGUSR1`)
+	to the designated signal set (`sa_usr1.sa_mask` or `sa_usr2.sa_mask`),
+	blocking `SIGUSR2` while handling `SIGUSR1`, and vice versa.
+
+    `sigaction` assigns the `signal_action` handler to specified signals.
+    Error handling for `sigaction` is omitted for readability.
+*/
 
 void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
 {
@@ -23,16 +35,10 @@ void	init_sigaction(void (*signal_action)(int, siginfo_t *, void *))
 	sa_usr2.sa_sigaction = signal_action;
 	sa_usr1.sa_flags = SA_SIGINFO;
 	sa_usr2.sa_flags = SA_SIGINFO;
-	if (sigemptyset(&sa_usr1.sa_mask) < 0)
-		exit_with_error(SIGEMPTYSET_FAIL);
-	if (sigemptyset(&sa_usr2.sa_mask) < 0)
-		exit_with_error(SIGEMPTYSET_FAIL);
-	if (sigaddset(&sa_usr1.sa_mask, SIGUSR2) < 0)
-		exit_with_error(SIGADDSET_FAIL);
-	if (sigaddset(&sa_usr2.sa_mask, SIGUSR1) < 0)
-		exit_with_error(SIGADDSET_FAIL);
-	if (sigaction(SIGUSR1, &sa_usr1, NULL) < 0)
-		exit_with_error(SIGACTION_FAIL);
-	if (sigaction(SIGUSR2, &sa_usr2, NULL) < 0)
-		exit_with_error(SIGACTION_FAIL);
+	sigemptyset(&sa_usr1.sa_mask);
+	sigemptyset(&sa_usr2.sa_mask);
+	sigaddset(&sa_usr1.sa_mask, SIGUSR2);
+	sigaddset(&sa_usr2.sa_mask, SIGUSR1);
+	sigaction(SIGUSR1, &sa_usr1, NULL);
+	sigaction(SIGUSR2, &sa_usr2, NULL);
 }
