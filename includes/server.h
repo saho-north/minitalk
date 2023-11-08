@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/01 01:30:53 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 14:24:07 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 18:59:42 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,7 @@ typedef struct s_msg_state
 	size_t						bits_count;
 	pid_t						sender_pid;
 	size_t						call_count;
-	bool						is_first_signal;
-	bool						is_last_signal;
+	bool						is_end_of_message;
 }								t_msg_state;
 
 extern volatile t_signal_info	g_server_info;
@@ -43,7 +42,7 @@ extern volatile t_signal_info	g_server_info;
 void							reset_server_info(void);
 void							reset_msg_state(t_msg_state *msg_state);
 void							receive_message(t_msg_state *msg_state);
-void							put_char_into_buf(t_msg_state *msg_state);
+void							process_char(t_msg_state *msg_state);
 bool							has_no_current_client(void);
 bool							is_waiting_signal(void);
 void							check_call_limit(t_msg_state *msg_state);

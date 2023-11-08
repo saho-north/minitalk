@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/08 10:21:17 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 13:42:22 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,6 @@ typedef enum e_error_type
 	SERVER_FAIL,
 	ERROR_TYPE_COUNT
 }							t_error_type;
-
-typedef enum e_control_characters
-{
-	START_OF_TXT = 0x02,
-	END_OF_TXT = 0x03
-}							t_control_characters;
 
 typedef struct s_signal_info
 {
