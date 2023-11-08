@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/01 01:50:51 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 14:26:35 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 12:26:35 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void	realloc_msg_state(t_msg_state *msg_state)
 	char	*tmp;
 	size_t	new_buf_size;
 
-	new_buf_size = msg_state->buf_size * 2 + 1;
+	new_buf_size = msg_state->buf_size * 2;
 	tmp = (char *)ft_realloc(msg_state->buf, msg_state->buf_size, new_buf_size);
 	if (!tmp)
 	{
