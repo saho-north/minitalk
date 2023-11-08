@@ -6,19 +6,13 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 23:11:01 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 22:07:57 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
 volatile t_signal_info	g_server_info;
-
-void	reset_server_info(void)
-{
-	g_server_info.current_pid = 0;
-	g_server_info.signal_status = WAITING_FOR_SIGNAL;
-}
 
 static void	server_signal_action(int sig, siginfo_t *info, void *ucontext)
 {
@@ -33,6 +27,12 @@ static void	server_signal_action(int sig, siginfo_t *info, void *ucontext)
 		g_server_info.signal_status = ZERO_BIT;
 	else if (sig == SIGUSR2)
 		g_server_info.signal_status = ONE_BIT;
+}
+
+void	reset_server_info(void)
+{
+	g_server_info.current_pid = 0;
+	g_server_info.signal_status = WAITING_FOR_SIGNAL;
 }
 
 void	reset_msg_state(t_msg_state *msg_state)
@@ -51,8 +51,7 @@ void	reset_msg_state(t_msg_state *msg_state)
 	msg_state->bits_count = 0;
 	msg_state->sender_pid = 0;
 	msg_state->call_count = 0;
-	msg_state->is_first_signal = true;
-	msg_state->is_last_signal = false;
+	msg_state->is_end_of_message = false;
 }
 
 static t_msg_state	*init_msg_state(void)

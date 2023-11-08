@@ -6,24 +6,33 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 05:08:31 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 14:24:52 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/08 22:44:31 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-void	notify_failure(t_msg_state *msg_state)
+static void	send_ack(t_msg_state *msg_state)
 {
 	if (msg_state->sender_pid == 0)
 		return ;
-	if (kill(msg_state->sender_pid, SIGUSR1) < 0)
+	if (kill(msg_state->sender_pid, SIGUSR2) < 0)
 		free_and_exit(msg_state, KILL_FAIL);
 }
 
-static void	send_ack(t_msg_state *msg_state)
+static void	ready_for_next_signal(t_msg_state *msg_state)
 {
-	if (kill(msg_state->sender_pid, SIGUSR2) < 0)
-		free_and_exit(msg_state, KILL_FAIL);
+	g_server_info.signal_status = WAITING_FOR_SIGNAL;
+	msg_state->call_count = 0;
+}
+
+static void	check_end_of_message(t_msg_state *msg_state)
+{
+	if (msg_state->is_end_of_message)
+	{
+		reset_server_info();
+		reset_msg_state(msg_state);
+	}
 }
 
 static void	process_received_bit(t_msg_state *msg_state)
@@ -31,12 +40,8 @@ static void	process_received_bit(t_msg_state *msg_state)
 	if (g_server_info.signal_status == ONE_BIT)
 		msg_state->current_char |= 1 << (7 - msg_state->bits_count);
 	msg_state->bits_count++;
-	if (msg_state->bits_count == 8)
-	{
-		put_char_into_buf(msg_state);
-		msg_state->current_char = 0;
-		msg_state->bits_count = 0;
-	}
+	if (msg_state->bits_count == CHAR_BIT)
+		process_char(msg_state);
 }
 
 void	receive_message(t_msg_state *msg_state)
@@ -49,10 +54,7 @@ void	receive_message(t_msg_state *msg_state)
 	process_received_bit(msg_state);
 	g_server_info.signal_status = WAITING_FOR_SIGNAL;
 	msg_state->call_count = 0;
+	ready_for_next_signal(msg_state);
 	send_ack(msg_state);
-	if (msg_state->is_last_signal)
-	{
-		reset_server_info();
-		reset_msg_state(msg_state);
-	}
+	check_end_of_message(msg_state);
 }
