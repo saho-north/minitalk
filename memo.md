@@ -12,7 +12,6 @@
 
 **コードの可読性と管理改善（軽微な変更またはブランチを立てた方が良い）**:
 
-
 3. エラーmsgを出力する関数に、enumを渡してエラーメッセージの種類を指定するよりも、出力したい文字列を直接エラーmsgを出力する関数に渡した方が処理がわかりやすいのではないか(char *を渡すということ)
 9. Severが落ちやすすぎる。clientが間違ったtxtを送ってきただけでserverが終了しているが、リセットをかけるだけにして、serverが落ちないようにしたほうがいい
 12. call_limitはなんに対するcall limitなのか明示的にした方がよくて、あとメッセージがいるのかも微妙である
@@ -30,7 +29,6 @@ typedef struct s_msg_state
 	char						current_char;
 	size_t						bits_count;
 	pid_t						sender_pid;
-	size_t						call_count;
 }								t_msg_state;
 ```
 - if (msg_state->sender_pid == 0) return; は, send_ackの中にも入らないっけ？

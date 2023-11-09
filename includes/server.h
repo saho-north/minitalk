@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/01 01:30:53 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/08 18:59:42 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/09 15:14:56 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "minitalk.h"
 
 # define INITIAL_BUF_SIZE 1024
-# define CALL_LIMIT 1000
+# define MAX_INVALID_SIGNALS 1000
 
 typedef enum e_signal_status
 {
@@ -33,7 +33,7 @@ typedef struct s_msg_state
 	char						current_char;
 	size_t						bits_count;
 	pid_t						sender_pid;
-	size_t						call_count;
+	size_t						invalid_signal_count;
 	bool						is_end_of_message;
 }								t_msg_state;
 
@@ -45,7 +45,7 @@ void							receive_message(t_msg_state *msg_state);
 void							process_char(t_msg_state *msg_state);
 bool							has_no_current_client(void);
 bool							is_waiting_signal(void);
-void							check_call_limit(t_msg_state *msg_state);
+void							handle_signal_overflow(t_msg_state *msg_state);
 void							free_and_exit(t_msg_state *m, t_error_type e);
 void							notify_failure(t_msg_state *msg_state);
 

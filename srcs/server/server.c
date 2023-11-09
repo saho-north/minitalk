@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/09 14:54:22 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/09 15:14:53 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	reset_msg_state(t_msg_state *msg_state)
 	msg_state->current_char = 0;
 	msg_state->bits_count = 0;
 	msg_state->sender_pid = 0;
-	msg_state->call_count = 0;
+	msg_state->invalid_signal_count = 0;
 	msg_state->is_end_of_message = false;
 }
 
@@ -80,7 +80,7 @@ int	main(void)
 	{
 		pause();
 		receive_message(msg_state);
-		check_call_limit(msg_state);
+		handle_signal_overflow(msg_state);
 	}
 	return (0);
 }
