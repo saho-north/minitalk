@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/08 22:07:57 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/09 14:54:22 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ volatile t_signal_info	g_server_info;
 static void	server_signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
-	if (g_server_info.current_pid == 0)
+	if (has_no_current_client())
 		g_server_info.current_pid = info->si_pid;
 	else if (g_server_info.current_pid != info->si_pid)
 		return ;

@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 05:08:31 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/08 22:44:31 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/09 14:52:11 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ void	receive_message(t_msg_state *msg_state)
 	if (msg_state->sender_pid == 0)
 		msg_state->sender_pid = g_server_info.current_pid;
 	process_received_bit(msg_state);
-	g_server_info.signal_status = WAITING_FOR_SIGNAL;
-	msg_state->call_count = 0;
 	ready_for_next_signal(msg_state);
 	send_ack(msg_state);
 	check_end_of_message(msg_state);
