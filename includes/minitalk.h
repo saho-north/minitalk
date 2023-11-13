@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/08 13:42:22 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/13 20:38:09 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ typedef struct s_signal_info
 	volatile sig_atomic_t	current_pid;
 	volatile sig_atomic_t	signal_status;
 }							t_signal_info;
+
+// extern volatile sig_atomic_t	g_signal_pid_state;
 
 void						exit_with_error(t_error_type error_type);
 void						init_sigaction(void (*a)(int, siginfo_t *, void *));

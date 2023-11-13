@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/08 13:53:53 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/13 20:48:23 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,28 @@ static void	transmit_byte(pid_t pid, char c)
 			bit_index--;
 			attempt_count = 0;
 		}
+		else if (ack_status == ACK_SERVER_FAIL)
+			exit_with_error(SERVER_FAIL);
+		else if (attempt_count > MAX_ATTEMPTS)
+			exit_with_error(TIMEOUT);
+	}
+}
+
+static void	send_initial_signal(pid_t pid)
+{
+	size_t						attempt_count;
+	t_signal_acknowledgement	ack_status;
+
+	attempt_count = 0;
+	while (true)
+	{
+		g_client_info.signal_status = ACK_WAITING;
+		if (kill(pid, SIGUSR1) < 0)
+			exit_with_error(KILL_FAIL);
+		attempt_count++;
+		ack_status = is_ack_received();
+		if (ack_status == ACK_RECEIVED)
+			break ;
 		else if (ack_status == ACK_SERVER_FAIL)
 			exit_with_error(SERVER_FAIL);
 		else if (attempt_count > MAX_ATTEMPTS)
