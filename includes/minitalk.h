@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/13 20:38:09 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/13 21:04:55 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 # include <unistd.h>
 
 # define SLEEP_DURATION 100
+# define ZERO 0
+# define ONE 1
+# define IDLE -1
 
 typedef enum e_error_type
 {
@@ -31,17 +34,12 @@ typedef enum e_error_type
 	TIMEOUT,
 	SERVER_FAIL,
 	ERROR_TYPE_COUNT
-}							t_error_type;
+}								t_error_type;
 
-typedef struct s_signal_info
-{
-	volatile sig_atomic_t	current_pid;
-	volatile sig_atomic_t	signal_status;
-}							t_signal_info;
+extern volatile sig_atomic_t	g_signal_pid_state;
 
-// extern volatile sig_atomic_t	g_signal_pid_state;
-
-void						exit_with_error(t_error_type error_type);
-void						init_sigaction(void (*a)(int, siginfo_t *, void *));
+void							exit_with_error(t_error_type error_type);
+void							init_sigaction(void (*a)(int, siginfo_t *,
+										void *));
 
 #endif

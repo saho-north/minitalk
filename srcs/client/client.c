@@ -6,13 +6,13 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/07 23:59:40 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/16 23:13:13 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-volatile t_signal_info	g_client_info;
+volatile sig_atomic_t	g_signal_pid_state;
 
 static void	client_signal_action(int sig, siginfo_t *info, void *ucontext)
 {
