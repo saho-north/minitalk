@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/17 02:10:28 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 02:42:28 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static bool	has_ack(void)
 		|| g_signal_pid_state == ACK_SERVER_FAIL);
 }
 
-static sig_atomic_t	is_ack_received(void)
+static sig_atomic_t	get_ack_status(void)
 {
 	size_t	sleep_count;
 
@@ -60,7 +60,7 @@ static void	transmit_byte(pid_t pid, char c)
 		g_signal_pid_state = pid;
 		transmit_bit(pid, (c >> bit_index) & 1);
 		attempt_count++;
-		ack_status = is_ack_received();
+		ack_status = get_ack_status();
 		if (ack_status == ACK_RECEIVED)
 		{
 			bit_index--;
@@ -85,7 +85,7 @@ static void	send_initial_signal(pid_t pid)
 		if (kill(pid, SIGUSR1) < 0)
 			exit_with_error(KILL_FAIL);
 		attempt_count++;
-		ack_status = is_ack_received();
+		ack_status = get_ack_status();
 		if (ack_status == ACK_RECEIVED)
 			break ;
 		else if (ack_status == ACK_SERVER_FAIL)
