@@ -6,25 +6,31 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/13 20:48:23 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 01:53:21 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
-static t_signal_acknowledgement	is_ack_received(void)
+static bool	has_ack(void)
+{
+	return (g_signal_pid_state == ACK_RECEIVED
+		|| g_signal_pid_state == ACK_SERVER_FAIL);
+}
+
+static sig_atomic_t	is_ack_received(void)
 {
 	size_t	sleep_count;
 
 	sleep_count = 0;
-	while (g_client_info.signal_status == ACK_WAITING)
+	while (!has_ack())
 	{
 		usleep(SLEEP_DURATION);
 		sleep_count++;
 		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
 			break ;
 	}
-	return (g_client_info.signal_status);
+	return (g_signal_pid_state);
 }
 
 static void	transmit_bit(pid_t pid, char bit)
@@ -51,7 +57,7 @@ static void	transmit_byte(pid_t pid, char c)
 	attempt_count = 0;
 	while (bit_index >= 0)
 	{
-		g_client_info.signal_status = ACK_WAITING;
+		g_signal_pid_state = pid;
 		transmit_bit(pid, (c >> bit_index) & 1);
 		attempt_count++;
 		ack_status = is_ack_received();
@@ -75,7 +81,7 @@ static void	send_initial_signal(pid_t pid)
 	attempt_count = 0;
 	while (true)
 	{
-		g_client_info.signal_status = ACK_WAITING;
+		g_signal_pid_state = pid;
 		if (kill(pid, SIGUSR1) < 0)
 			exit_with_error(KILL_FAIL);
 		attempt_count++;
@@ -91,6 +97,7 @@ static void	send_initial_signal(pid_t pid)
 
 void	transmit_message(pid_t pid, const char *str)
 {
+	send_initial_signal(pid);
 	while (*str)
 	{
 		transmit_byte(pid, *str);
