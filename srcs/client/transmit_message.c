@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/24 22:20:42 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/17 01:53:21 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 02:10:28 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,9 @@ static void	transmit_bit(pid_t pid, char bit)
 
 static void	transmit_byte(pid_t pid, char c)
 {
-	int							bit_index;
-	size_t						attempt_count;
-	t_signal_acknowledgement	ack_status;
+	int				bit_index;
+	size_t			attempt_count;
+	sig_atomic_t	ack_status;
 
 	bit_index = 7;
 	attempt_count = 0;
@@ -75,8 +75,8 @@ static void	transmit_byte(pid_t pid, char c)
 
 static void	send_initial_signal(pid_t pid)
 {
-	size_t						attempt_count;
-	t_signal_acknowledgement	ack_status;
+	size_t			attempt_count;
+	sig_atomic_t	ack_status;
 
 	attempt_count = 0;
 	while (true)
