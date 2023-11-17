@@ -6,17 +6,18 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:31:32 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/17 14:42:16 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 15:42:14 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.h"
 
 /*
-	Due to project restrictions that allow only one global variable for each server/client program,
-	the global variable g_signal_pid_state serves dual purposes. Firstly,
-	it stores the PID to verify the validity of the signal sender when receiving signals. Secondly,
-	it holds a received signal as a flag to notify the main component of the program."
+ * In client.c, g_signal_pid_state is used under the constraint of having
+ * only one global variable per program.
+ * It performs two key functions:
+ * 1. Stores the server PID for signal sender verification.
+ * 2. Holds the state of the received acknowledgment signal.
  */
 
 volatile sig_atomic_t	g_signal_pid_state;

@@ -1,33 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.h                                           :+:      :+:    :+:   */
+/*   get_ack_status.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/24 06:28:54 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/17 15:43:25 by sakitaha         ###   ########.fr       */
+/*   Created: 2023/11/17 15:41:12 by sakitaha          #+#    #+#             */
+/*   Updated: 2023/11/17 15:43:21 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CLIENT_H
-# define CLIENT_H
+#include "client.h"
 
-# include "minitalk.h"
-# include <stdbool.h>
-
-# define MAX_ATTEMPTS 10
-# define TIMEOUT_LIMIT 1000000
-# define SLEEP_DURATION 100
-# define IDLE -1
-
-typedef enum e_signal_acknowledgement
+static bool	has_ack(void)
 {
-	ACK_SERVER_FAIL,
-	ACK_RECEIVED
-}				t_signal_acknowledgement;
+	return (g_signal_pid_state == ACK_RECEIVED
+		|| g_signal_pid_state == ACK_SERVER_FAIL);
+}
 
-void			transmit_message(pid_t pid, const char *str);
-sig_atomic_t	get_ack_status(void);
+sig_atomic_t	get_ack_status(void)
+{
+	size_t	sleep_count;
 
-#endif
+	sleep_count = 0;
+	while (!has_ack())
+	{
+		usleep(SLEEP_DURATION);
+		sleep_count++;
+		if (sleep_count * SLEEP_DURATION > TIMEOUT_LIMIT)
+			break ;
+	}
+	return (g_signal_pid_state);
+}
