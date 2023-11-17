@@ -6,11 +6,20 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/16 23:09:48 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 14:46:56 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
+
+/*
+ * In server.c, g_signal_pid_state is utilized,
+ * adhering to the project's limitation of one global variable per program.
+ * Its dual role includes:
+ *
+ * 1. Holding the PID of the current client to manage incoming signals.
+ * 2. Representing the state of received signals.
+ */
 
 volatile sig_atomic_t	g_signal_pid_state;
 

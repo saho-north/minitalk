@@ -6,23 +6,19 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 14:10:07 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/16 23:09:48 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 15:02:37 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-void	notify_failure(t_msg_state *msg_state)
+void	check_end_of_message(t_msg_state *msg_state)
 {
-	if (msg_state->sender_pid == 0)
-		return ;
-	if (kill(msg_state->sender_pid, SIGUSR1) < 0)
-		free_and_exit(msg_state, KILL_FAIL);
-}
-
-bool	is_server_idle(void)
-{
-	return (g_signal_pid_state == IDLE);
+	if (msg_state->is_end_of_message)
+	{
+		reset_server();
+		reset_msg_state(msg_state);
+	}
 }
 
 bool	has_signal(void)

@@ -6,28 +6,11 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 05:08:31 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/16 23:11:15 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 14:56:13 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
-
-static void	check_end_of_message(t_msg_state *msg_state)
-{
-	if (msg_state->is_end_of_message)
-	{
-		reset_server();
-		reset_msg_state(msg_state);
-	}
-}
-
-static void	send_ack(t_msg_state *msg_state)
-{
-	if (msg_state->sender_pid == 0)
-		return ;
-	if (kill(msg_state->sender_pid, SIGUSR2) < 0)
-		free_and_exit(msg_state, KILL_FAIL);
-}
 
 static void	ready_for_next_signal(t_msg_state *msg_state)
 {
