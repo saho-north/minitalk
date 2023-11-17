@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/31 14:10:07 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/17 15:02:37 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 16:21:50 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	handle_signal_overflow(t_msg_state *msg_state)
 {
 	if (msg_state->invalid_signal_count > MAX_INVALID_SIGNALS)
 	{
-		ft_putstr_fd("Warning: Call limit reached. Resetting state.\n", 1);
+		ft_putstr_fd("Warning: Call limit reached. Resetting state.\n", 2);
 		reset_server();
 		reset_msg_state(msg_state);
 	}
