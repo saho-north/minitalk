@@ -16,7 +16,7 @@ HDR             = $(addprefix $(HDR_DIR), $(HDR_LIST))
 
 SRCS_COMMON     = exit_with_error.c init_sigaction.c
 SRCS_CLIENT     = $(CLIENT).c transmit_message.c
-SRCS_SERVER     = $(SERVER).c receive_message.c process_char.c server_utils.c
+SRCS_SERVER     = $(SERVER).c receive_message.c process_char.c server_utils.c server_ack.c
 
 SRCS_COMMON_DIR = ./srcs/common/
 SRCS_CLIENT_DIR = ./srcs/client/

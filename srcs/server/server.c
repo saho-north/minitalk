@@ -6,33 +6,42 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 03:56:21 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/09 15:14:53 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 14:46:56 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "server.h"
 
-volatile t_signal_info	g_server_info;
+/*
+ * In server.c, g_signal_pid_state is utilized,
+ * adhering to the project's limitation of one global variable per program.
+ * Its dual role includes:
+ *
+ * 1. Holding the PID of the current client to manage incoming signals.
+ * 2. Representing the state of received signals.
+ */
+
+volatile sig_atomic_t	g_signal_pid_state;
 
 static void	server_signal_action(int sig, siginfo_t *info, void *ucontext)
 {
 	(void)ucontext;
-	if (has_no_current_client())
-		g_server_info.current_pid = info->si_pid;
-	else if (g_server_info.current_pid != info->si_pid)
+	if (g_signal_pid_state == IDLE)
+	{
+		g_signal_pid_state = info->si_pid;
 		return ;
-	if (g_server_info.signal_status != WAITING_FOR_SIGNAL)
+	}
+	if (g_signal_pid_state != info->si_pid)
 		return ;
 	if (sig == SIGUSR1)
-		g_server_info.signal_status = ZERO_BIT;
+		g_signal_pid_state = ZERO;
 	else if (sig == SIGUSR2)
-		g_server_info.signal_status = ONE_BIT;
+		g_signal_pid_state = ONE;
 }
 
-void	reset_server_info(void)
+void	reset_server(void)
 {
-	g_server_info.current_pid = 0;
-	g_server_info.signal_status = WAITING_FOR_SIGNAL;
+	g_signal_pid_state = IDLE;
 }
 
 void	reset_msg_state(t_msg_state *msg_state)
@@ -71,7 +80,7 @@ int	main(void)
 	t_msg_state	*msg_state;
 
 	msg_state = init_msg_state();
-	reset_server_info();
+	reset_server();
 	ft_putstr_fd("Server PID: ", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putchar_fd('\n', 1);

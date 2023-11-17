@@ -6,7 +6,7 @@
 /*   By: sakitaha <sakitaha@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/15 04:12:35 by sakitaha          #+#    #+#             */
-/*   Updated: 2023/11/08 13:42:22 by sakitaha         ###   ########.fr       */
+/*   Updated: 2023/11/17 14:44:33 by sakitaha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 # include <signal.h>
 # include <stddef.h>
 # include <unistd.h>
-
-# define SLEEP_DURATION 100
 
 typedef enum e_error_type
 {
@@ -31,15 +29,19 @@ typedef enum e_error_type
 	TIMEOUT,
 	SERVER_FAIL,
 	ERROR_TYPE_COUNT
-}							t_error_type;
+}								t_error_type;
 
-typedef struct s_signal_info
-{
-	volatile sig_atomic_t	current_pid;
-	volatile sig_atomic_t	signal_status;
-}							t_signal_info;
+/*
+ * Project constraints limit to one global variable per server/client program.
+ * The g_signal_pid_state variable serves two purposes:
+ * 1. Stores the PID to verify the signal sender's validity.
+ * 2. Holds a received signal as a flag for notifying the main component.
+ */
 
-void						exit_with_error(t_error_type error_type);
-void						init_sigaction(void (*a)(int, siginfo_t *, void *));
+extern volatile sig_atomic_t	g_signal_pid_state;
+
+void							exit_with_error(t_error_type error_type);
+void							init_sigaction(void (*a)(int, siginfo_t *,
+										void *));
 
 #endif
